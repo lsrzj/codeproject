@@ -57,9 +57,9 @@ class ClientController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id) {
-            $client = \CodeProject\Client::findOrFail($id);
-            $input = $request->all();
-            return $client->fill($input)->save();
+        $client = \CodeProject\Client::findOrFail($id);
+        $input = $request->all();
+        $client->fill($input)->save();
     }
 
     /**
@@ -69,7 +69,7 @@ class ClientController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function destroy($id) {
-            \CodeProject\Client::findOrFail($id)->delete();
+        \CodeProject\Client::findOrFail($id)->delete();
     }
 
 }
