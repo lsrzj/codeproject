@@ -2,10 +2,11 @@
 
 namespace CodeProject\Http\Controllers;
 
-use Exception;
+use CodeProject\Entities\Client;
+use CodeProject\Repositories\ClientRepository;
 use Illuminate\Http\Request;
-use CodeProject\Http\Requests;
 use CodeProject\Http\Controllers\Controller;
+use Exception;
 
 
 class ClientController extends Controller {
@@ -16,7 +17,7 @@ class ClientController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function index() {
-        return \CodeProject\Client::all();
+        return $repository->all();
     }
 
     /**
@@ -26,7 +27,7 @@ class ClientController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request) {
-        return \CodeProject\Client::create($request->all());
+        return Client::create($request->all());
     }
 
     /**
@@ -36,7 +37,7 @@ class ClientController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function show($id) {
-        return \CodeProject\Client::find($id);
+        return Client::find($id);
     }
 
     /**
@@ -57,9 +58,15 @@ class ClientController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id) {
-        $client = \CodeProject\Client::findOrFail($id);
-        $input = $request->all();
-        $client->fill($input)->save();
+        try{
+            $client = Client::findOrFail($id);
+            $input = $request->all();
+            $client->fill($input)->save();
+            return $client;
+        } catch(Exception $e){
+            return response()->json(['success' => false,
+                                     'message' => $e->getMessage()]);
+        }
     }
 
     /**
@@ -69,7 +76,12 @@ class ClientController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function destroy($id) {
-        \CodeProject\Client::findOrFail($id)->delete();
+        try{
+            Client::findOrFail($id)->delete();
+        } catch (Exception $e){
+            return response()->json(['success' => false,
+                                     'message' => $e->getMessage()]);
+        }
     }
 
 }
