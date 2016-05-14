@@ -3,11 +3,9 @@
 namespace CodeProject\Http\Controllers;
 
 use CodeProject\Entities\Client;
-use CodeProject\Repositories\ClientRepository;
 use Illuminate\Http\Request;
 use CodeProject\Http\Controllers\Controller;
 use Exception;
-
 
 class ClientController extends Controller {
 
@@ -17,7 +15,7 @@ class ClientController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function index() {
-        return $repository->all();
+        return Client::all();
     }
 
     /**
@@ -27,7 +25,14 @@ class ClientController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request) {
-        return Client::create($request->all());
+        try {
+            return Client::create($request->all());
+        } catch (Exception $e) {
+            return response()->json([
+                        'success' => FALSE,
+                        'message' => $e->getMessage()
+            ]);
+        }
     }
 
     /**
@@ -37,7 +42,14 @@ class ClientController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function show($id) {
-        return Client::find($id);
+        try {
+            return Client::findOrFail($id);
+        } catch (Exception $e) {
+            return response()->json([
+                        'success' => FALSE,
+                        'message' => $e->getMessage()
+            ]);
+        }
     }
 
     /**
@@ -58,14 +70,16 @@ class ClientController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id) {
-        try{
+        try {
             $client = Client::findOrFail($id);
             $input = $request->all();
             $client->fill($input)->save();
             return $client;
-        } catch(Exception $e){
-            return response()->json(['success' => false,
-                                     'message' => $e->getMessage()]);
+        } catch (Exception $e) {
+            return response()->json([
+                        'success' => FALSE,
+                        'message' => $e->getMessage()
+            ]);
         }
     }
 
@@ -76,11 +90,17 @@ class ClientController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function destroy($id) {
-        try{
+        try {
             Client::findOrFail($id)->delete();
-        } catch (Exception $e){
-            return response()->json(['success' => false,
-                                     'message' => $e->getMessage()]);
+            return response()->json([
+                        'success' => TRUE,
+                        'message' => 'Resource deleted successfuly'
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                        'success' => FALSE,
+                        'message' => $e->getMessage()
+            ]);
         }
     }
 
