@@ -2,12 +2,28 @@
 
 namespace CodeProject\Http\Controllers;
 
-use CodeProject\Entities\Client;
 use Illuminate\Http\Request;
-use CodeProject\Http\Controllers\Controller;
-use Exception;
+use CodeProject\Repositories\ClientRepository;
+use \CodeProject\Services\ClientService;
 
 class ClientController extends Controller {
+
+    /**
+     *
+     * @var ClientRepository 
+     */
+    private $repository;
+
+    /**
+     *
+     * @var ClientService
+     */
+    private $service;
+
+    public function __construct(ClientRepository $repository, ClientService $service) {
+        $this->repository = $repository;
+        $this->service = $service;
+    }
 
     /**
      * Display a listing of the resource.
@@ -15,7 +31,7 @@ class ClientController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function index() {
-        return Client::all();
+        return $this->repository->all();
     }
 
     /**
@@ -25,14 +41,7 @@ class ClientController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request) {
-        try {
-            return Client::create($request->all());
-        } catch (Exception $e) {
-            return response()->json([
-                        'success' => FALSE,
-                        'message' => $e->getMessage()
-            ]);
-        }
+        return $this->service->create($request->all());
     }
 
     /**
@@ -43,7 +52,7 @@ class ClientController extends Controller {
      */
     public function show($id) {
         try {
-            return Client::findOrFail($id);
+            return $this->repository->find($id);
         } catch (Exception $e) {
             return response()->json([
                         'success' => FALSE,
@@ -70,17 +79,7 @@ class ClientController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id) {
-        try {
-            $client = Client::findOrFail($id);
-            $input = $request->all();
-            $client->fill($input)->save();
-            return $client;
-        } catch (Exception $e) {
-            return response()->json([
-                        'success' => FALSE,
-                        'message' => $e->getMessage()
-            ]);
-        }
+        return $this->service->update($request->all(), $id);
     }
 
     /**
@@ -91,7 +90,7 @@ class ClientController extends Controller {
      */
     public function destroy($id) {
         try {
-            Client::findOrFail($id)->delete();
+            $this->repository->find($id)->delete();
             return response()->json([
                         'success' => TRUE,
                         'message' => 'Resource deleted successfuly'
