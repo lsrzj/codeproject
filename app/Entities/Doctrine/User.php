@@ -8,6 +8,7 @@ use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
+use Doctrine\Common\Collections\ArrayCollection;
 
 class User implements AuthenticatableContract,
                       AuthorizableContract,
@@ -18,7 +19,7 @@ class User implements AuthenticatableContract,
     use Authenticatable,
         Authorizable,
         CanResetPassword;
-
+    
     private $id;
     private $name;
     private $email;
@@ -28,12 +29,8 @@ class User implements AuthenticatableContract,
     private $updated_at;
     private $projects;
 
-    public function __construct($name, $email, $password, $remember_token, $projects) {
-        $this->name = $name;
-        $this->email = $email;
-        $this->password = $password;
-        $this->remember_token = $remember_token;
-        $this->projects = $projects;
+    public function __construct() {
+        $this->projects = new ArrayCollection();
     }
     
     public function __toString() {
@@ -41,7 +38,14 @@ class User implements AuthenticatableContract,
     }
     
     public function jsonSerialize() {
-        return get_object_vars($this);
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'email' => $this->email,
+            'created_at' => $this->created_at->__toString(),
+            'updated_at' => $this->updated_at->__toString(),
+            'projects' => $this->projects,   
+        ];
     }
     
     public function getAuthIdentifierName() {

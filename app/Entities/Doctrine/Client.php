@@ -2,6 +2,8 @@
 
 namespace CodeProject\Entities\Doctrine;
 
+use Doctrine\Common\Collections\ArrayCollection;
+
 class Client implements \JsonSerializable {
 
     private $id;
@@ -15,21 +17,38 @@ class Client implements \JsonSerializable {
     private $updated_at;
     private $projects;
 
-    public function __construct($name, $responsible, $email, $phone, $address, $obs) {
-        $this->name = $name;
-        $this->responsible = $responsible;
-        $this->email = $email;
-        $this->phone = $phone;
-        $this->address = $address;
-        $this->obs = $obs;
+    public function __construct() {
+        $this->projects = new ArrayCollection();
     }
 
     public function __toString() {
-        return json_encode(get_object_vars($this));
+        return json_encode([
+            'id' => $this->id,
+            'name' => $this->name,
+            'responsible' => $this->responsible,
+            'email' => $this->email,
+            'phone' => $this->phone,
+            'address' => $this->address,
+            'obs' => $this->obs,
+            'created_at' => $this->created_at->__toString(),
+            'updated_at' => $this->updated_at->__toString(),
+            'projects' => $this->projects
+        ]);
     }
 
     public function jsonSerialize() {
-        return get_object_vars($this);
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'responsible' => $this->responsible,
+            'email' => $this->email,
+            'phone' => $this->phone,
+            'address' => $this->address,
+            'obs' => $this->obs,
+            'created_at' => $this->created_at->__toString(),
+            'updated_at' => $this->updated_at->__toString(),
+            'projects' => $this->projects
+        ];
     }
 
     function getId() {

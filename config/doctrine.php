@@ -119,7 +119,8 @@ return [
         'carbondate'       => DoctrineExtensions\Types\CarbonDateType::class,
         'carbondatetime'   => DoctrineExtensions\Types\CarbonDateTimeType::class,
         'carbondatetimetz' => DoctrineExtensions\Types\CarbonDateTimeTzType::class,
-        'carbontime'       => DoctrineExtensions\Types\CarbonTimeType::class
+        'carbontime'       => DoctrineExtensions\Types\CarbonTimeType::class,
+        'datetime'         => DoctrineExtensions\Types\CarbonDateTimeType::class,
     ],
     /*
     |--------------------------------------------------------------------------

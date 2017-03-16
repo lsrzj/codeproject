@@ -41,6 +41,6 @@ class ClientMapping extends EntityMapping
         $builder->timestamp('created_at')->timestampable()->onCreate();
         $builder->timestamp('updated_at')->timestampable()->onUpdate();
         
-        $builder->hasMany('CodeProject\Entities\Doctrine\Project')->mappedBy('client_id');
+        $builder->hasMany('CodeProject\Entities\Doctrine\Project')->mappedBy('client');
     }
 }

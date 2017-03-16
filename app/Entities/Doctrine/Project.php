@@ -4,16 +4,66 @@ namespace CodeProject\Entities\Doctrine;
 
 class Project implements \JsonSerializable {
 
+    /**
+     *
+     * @var integer
+     */
     private $id;
+
+    /**
+     *
+     * @var string 
+     */
     private $name;
+
+    /**
+     *
+     * @var string
+     */
     private $description;
+
+    /**
+     *
+     * @var float
+     */
     private $progress;
+
+    /**
+     *
+     * @var integer
+     */
     private $status;
+
+    /**
+     *
+     * @var Carbon\Carbon
+     */
     private $due_date;
+
+    /**
+     *
+     * @var Carbon\Carbon
+     */
     private $created_at;
+
+    /**
+     *
+     * @var Carbon\Carbon
+     */
     private $updated_at;
+
+    /**
+     *
+     * @var CodeProject\Entities\Doctrine\User
+     */
     private $user;
+
+    /**
+     *
+     * @var CodeProject\Entities\Doctrine\Client
+     */
     private $client;
+    
 
     public function __construct($name, $description, $progress, $status, $due_date, $user, $client) {
         $this->name = $name;
@@ -26,11 +76,31 @@ class Project implements \JsonSerializable {
     }
 
     public function __toString() {
-        return json_encode(get_object_vars($this));
+        return json_encode([
+            'name' => $this->name,
+            'description' => $this->description,
+            'progress' => $this->progress,
+            'status' => $this->status,
+            'due_date' => $this->due_date->__toString(),
+            'created_at' => $this->created_at->__toString(),
+            'updated_at' => $this->updated_at->__toString(),
+            'user' => $this->user,
+            'client' => $this->client
+        ]);
     }
 
     public function jsonSerialize() {
-        return get_object_vars($this);
+        return [
+            'name' => $this->name,
+            'description' => $this->description,
+            'progress' => $this->progress,
+            'status' => $this->status,
+            'due_date' => $this->due_date->__toString(),
+            'created_at' => $this->created_at->__toString(),
+            'updated_at' => $this->updated_at->__toString(),
+            'user' => $this->user,
+            'client' => $this->client            
+        ];
     }
 
     function getId() {

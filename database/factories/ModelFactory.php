@@ -41,10 +41,10 @@ $factory->define(Project::class, function(Faker\Generator $faker) {
     return [
         'name' => $faker->sentence,
         'description' => $faker->paragraph,
-        'progress' => $faker->numberBetween(0),
+        'progress' => $faker->numberBetween(0, 100),
         'status' => $faker->numberBetween(1, 5),
         'due_date' => $faker->dateTime,
-        'owner_id' => 1,
-        'client_id' => $faker->numberBetween(1, 10)
+        'owner_id' => $faker->numberBetween(1, 100),
+        'client_id' => $faker->numberBetween(1, 100)
     ];
 });

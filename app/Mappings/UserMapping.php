@@ -39,6 +39,6 @@ class UserMapping extends EntityMapping
         $builder->timestamp('created_at')->timestampable()->onCreate();
         $builder->timestamp('updated_at')->timestampable()->onUpdate();
         
-        $builder->hasMany('CodeProject\Entities\Doctrine\Project')->mappedBy('owner_id');
+        $builder->hasMany('CodeProject\Entities\Doctrine\Project')->mappedBy('user');
     }
 }

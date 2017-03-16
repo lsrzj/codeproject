@@ -40,7 +40,7 @@ class ProjectMapping extends EntityMapping
         $builder->timestamp('created_at')->timestampable()->onCreate();
         $builder->timestamp('updated_at')->timestampable()->onUpdate();
         
-        $builder->belongsTo('CodeProject\Entities\Doctrine\User')->foreignKey('owner_id');
-        $builder->belongsTo('CodeProject\Entities\Doctrine\Client');
+        $builder->belongsTo('CodeProject\Entities\Doctrine\User')->foreignKey('owner_id')->inversedBy('projects');
+        $builder->belongsTo('CodeProject\Entities\Doctrine\Client')->inversedBy('projects');
     }
 }
