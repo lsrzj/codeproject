@@ -3,10 +3,11 @@
 namespace CodeProject\Http\Controllers;
 
 use Illuminate\Http\Request;
-use CodeProject\Repositories\ClientRepository;
-use CodeProject\Services\ClientService;
+use CodeProject\Http\Controllers\Controller;
+use CodeProject\Repositories\ProjectRepository;
+use CodeProject\Services\ProjectService;
 
-class ClientController extends Controller {
+class ProjectController extends Controller {
 
     /**
      *
@@ -19,8 +20,8 @@ class ClientController extends Controller {
      * @var ClientService
      */
     private $service;
-    
-    public function __construct(ClientRepository $repository, ClientService $service) {
+
+    public function __construct(ProjectRepository $repository, ProjectService $service) {
         $this->repository = $repository;
         $this->service = $service;
     }
@@ -32,9 +33,19 @@ class ClientController extends Controller {
      */
     public function index() {
         //Eloquent
-        return response()->json($this->repository->all());
+        return response()->json($this->repository->with(['user', 'client'])->all());
+        
         //Doctrine
         //return response()->json($this->repository->findAll());
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create() {
+        //
     }
 
     /**
@@ -58,8 +69,8 @@ class ClientController extends Controller {
             return $this->repository->find($id);
         } catch (\Exception $e) {
             return response()->json([
-                        'success' => FALSE,
-                        'message' => $e->getMessage()
+                'success' => FALSE,
+                'message' => $e->getMessage()
             ]);
         }
     }
@@ -105,5 +116,4 @@ class ClientController extends Controller {
             ]);
         }
     }
-
 }

@@ -1,18 +1,19 @@
 <?php
 
 /*
-|--------------------------------------------------------------------------
-| Model Factories
-|--------------------------------------------------------------------------
-|
-| Here you may define all of your model factories. Model factories give
-| you a convenient way to create models for testing and seeding your
-| database. Just tell the factory how a default model should look.
-|
-*/
-use CodeProject\Entities\User;
-use CodeProject\Entities\Client;
+  |--------------------------------------------------------------------------
+  | Model Factories
+  |--------------------------------------------------------------------------
+  |
+  | Here you may define all of your model factories. Model factories give
+  | you a convenient way to create models for testing and seeding your
+  | database. Just tell the factory how a default model should look.
+  |
+ */
 
+use CodeProject\Entities\Eloquent\User;
+use CodeProject\Entities\Eloquent\Client;
+use CodeProject\Entities\Eloquent\Project;
 
 $factory->define(User::class, function (Faker\Generator $faker) {
     return [
@@ -32,5 +33,18 @@ $factory->define(Client::class, function (Faker\Generator $faker) {
         'phone' => $faker->phoneNumber,
         'address' => $faker->address,
         'obs' => $faker->sentence,
+    ];
+});
+
+
+$factory->define(Project::class, function(Faker\Generator $faker) {
+    return [
+        'name' => $faker->sentence,
+        'description' => $faker->paragraph,
+        'progress' => $faker->numberBetween(0),
+        'status' => $faker->numberBetween(1, 5),
+        'due_date' => $faker->dateTime,
+        'owner_id' => 1,
+        'client_id' => $faker->numberBetween(1, 10)
     ];
 });
