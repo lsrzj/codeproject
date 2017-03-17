@@ -49,6 +49,9 @@ class CodeProjectRepositoryProvider extends ServiceProvider {
                     $app['em'], $app['em']->getClassMetaData(Project::class)
             );
         });*/
+        
+        $this->app->bind(
+                ProjectNoteRepository::class, ProjectNoteRepositoryEloquent::class);
     }
 
 }

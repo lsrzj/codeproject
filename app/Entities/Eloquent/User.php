@@ -9,6 +9,7 @@ use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
+use CodeProject\Entities\Eloquent\Project;
 
 class User extends Model implements AuthenticatableContract,
                                     AuthorizableContract,
@@ -41,6 +42,6 @@ class User extends Model implements AuthenticatableContract,
 
     
     public function projects() {
-        return $this->hasMany('CodeProject\Entities\Eloquent\Project');
+        return $this->hasMany(Project::class);
     }
 }

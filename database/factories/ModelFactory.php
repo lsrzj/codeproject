@@ -14,6 +14,7 @@
 use CodeProject\Entities\Eloquent\User;
 use CodeProject\Entities\Eloquent\Client;
 use CodeProject\Entities\Eloquent\Project;
+use CodeProject\Entities\Eloquent\ProjectNote;
 
 $factory->define(User::class, function (Faker\Generator $faker) {
     return [
@@ -39,7 +40,7 @@ $factory->define(Client::class, function (Faker\Generator $faker) {
 
 $factory->define(Project::class, function(Faker\Generator $faker) {
     return [
-        'name' => $faker->sentence,
+        'name' => $faker->word,
         'description' => $faker->paragraph,
         'progress' => $faker->numberBetween(0, 100),
         'status' => $faker->numberBetween(1, 5),
@@ -48,3 +49,12 @@ $factory->define(Project::class, function(Faker\Generator $faker) {
         'client_id' => $faker->numberBetween(1, 100)
     ];
 });
+
+$factory->define(ProjectNote::class, function(Faker\Generator $faker) {
+    return [
+        'project_id' => $faker->numberBetween(1, 100),
+        'title' => $faker->sentence,
+        'note' => $faker->paragraph
+    ];
+});
+
