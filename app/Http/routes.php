@@ -31,4 +31,5 @@ Route::group(['prefix' => 'project'], function() {
     Route::put('{id}', 'ProjectController@update');
     Route::delete('{id}', 'ProjectController@destroy'); 
     Route::get('findByOwner/{id}', 'ProjectController@ProjectsOwnedBy');
+    Route::get('getProjectsForClient/{id}', 'ProjectController@getProjectsForClient');    
 });

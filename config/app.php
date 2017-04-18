@@ -127,12 +127,7 @@ return [
         CodeProject\Providers\AuthServiceProvider::class,
         CodeProject\Providers\EventServiceProvider::class,
         CodeProject\Providers\RouteServiceProvider::class,
-        CodeProject\Providers\CodeProjectRepositoryProvider::class,
-        LaravelDoctrine\ORM\DoctrineServiceProvider::class,
-        LaravelDoctrine\Extensions\GedmoExtensionsServiceProvider::class,
-        LaravelDoctrine\Extensions\BeberleiExtensionsServiceProvider::class,
-        LaravelDoctrine\Migrations\MigrationsServiceProvider::class,
-        LaravelDoctrine\ACL\AclServiceProvider::class,
+        CodeProject\Providers\CodeProjectRepositoryProvider::class
     ],
     /*
       |--------------------------------------------------------------------------

@@ -1,11 +1,11 @@
 <?php
 
-namespace CodeProject\Entities\Eloquent;
+namespace CodeProject\Entities;
 
 use Illuminate\Database\Eloquent\Model;
-use CodeProject\Entities\Eloquent\Client;
-use CodeProject\Entities\Eloquent\User;
-use CodeProject\Entities\Eloquent\ProjectNote;
+use CodeProject\Entities\Client;
+use CodeProject\Entities\User;
+use CodeProject\Entities\ProjectNote;
 
 class Project extends Model
 {

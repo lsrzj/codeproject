@@ -1,6 +1,6 @@
 <?php
 
-namespace CodeProject\Entities\Eloquent;
+namespace CodeProject\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 use CodeProject\Entities\Eloquent\Project;

@@ -32,11 +32,8 @@ class ProjectController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function index() {
-        //Eloquent
         return response()->json($this->repository->with(['user', 'client'])->all());
         
-        //Doctrine
-        //return response()->json($this->repository->findAll());
     }
 
     /**
@@ -66,7 +63,7 @@ class ProjectController extends Controller {
      */
     public function show($id) {
         try {
-            return $this->repository->find($id);
+            return response()->json($this->repository->find($id));
         } catch (\Exception $e) {
             return response()->json([
                 'success' => FALSE,
@@ -116,4 +113,8 @@ class ProjectController extends Controller {
             ]);
         }
     }
+
+    public function getProjectsForClient($id) {
+        return response()->json($this->repository->getProjectsForClient($id));
+    }    
 }

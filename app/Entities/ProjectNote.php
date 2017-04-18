@@ -1,11 +1,11 @@
 <?php
 
-namespace CodeProject\Entities\Eloquent;
+namespace CodeProject\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 use Prettus\Repository\Contracts\Transformable;
 use Prettus\Repository\Traits\TransformableTrait;
-use CodeProject\Entities\Eloquent\Project;
+use CodeProject\Entities\Project;
 
 class ProjectNote extends Model implements Transformable {
 

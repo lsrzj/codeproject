@@ -4,7 +4,7 @@ namespace CodeProject\Repositories;
 
 use Prettus\Repository\Eloquent\BaseRepository;
 use CodeProject\Repositories\ProjectRepository;
-use CodeProject\Entities\Eloquent\Project;
+use CodeProject\Entities\Project;
 
 /**
  * Class ProjectRepositoryEloquent

@@ -31,10 +31,8 @@ class ClientController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function index() {
-        //Eloquent
         return response()->json($this->repository->all());
-        //Doctrine
-        //return response()->json($this->repository->findAll());
+
     }
 
     /**
@@ -105,5 +103,4 @@ class ClientController extends Controller {
             ]);
         }
     }
-
 }

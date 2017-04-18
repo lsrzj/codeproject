@@ -12,3 +12,5 @@ interface ProjectNoteRepository extends RepositoryInterface
 {
     //
 }
+
+
