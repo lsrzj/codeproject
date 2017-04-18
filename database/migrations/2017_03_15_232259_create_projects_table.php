@@ -15,7 +15,7 @@ class CreateProjectsTable extends Migration {
             $table->increments('id');
             $table->string('name');
             $table->text('description');
-            $table->decimal('progress');
+            $table->smallInteger('progress')->unsigned();
             $table->integer('status');
             $table->dateTime('due_date');
             $table->timestamps();
