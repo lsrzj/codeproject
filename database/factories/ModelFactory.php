@@ -1,60 +1,35 @@
 <?php
 
+use Faker\Generator as Faker;
+
 /*
-  |--------------------------------------------------------------------------
-  | Model Factories
-  |--------------------------------------------------------------------------
-  |
-  | Here you may define all of your model factories. Model factories give
-  | you a convenient way to create models for testing and seeding your
-  | database. Just tell the factory how a default model should look.
-  |
- */
+|--------------------------------------------------------------------------
+| Model Factories
+|--------------------------------------------------------------------------
+|
+| This directory should contain each of the model factory definitions for
+| your application. Factories provide a convenient way to generate new
+| model instances for testing / seeding your application's database.
+|
+*/
 
-use CodeProject\Entities\Eloquent\User;
-use CodeProject\Entities\Eloquent\Client;
-use CodeProject\Entities\Eloquent\Project;
-use CodeProject\Entities\Eloquent\ProjectNote;
-
-$factory->define(User::class, function (Faker\Generator $faker) {
+$factory->define(CodeProject\Entities\User::class, function (Faker $faker) {
     return [
         'name' => $faker->name,
-        'email' => $faker->email,
-        'password' => bcrypt(str_random(10)),
+        'email' => $faker->unique()->safeEmail,
+        'password' => '$2y$10$TKh8H1.PfQx37YgCzwiKb.KjNyWgaHb9cbcoQgdIVFlYg7B77UdFm', // secret
         'remember_token' => str_random(10),
     ];
 });
 
 
-$factory->define(Client::class, function (Faker\Generator $faker) {
+$factory->define(CodeProject\Entities\Client::class, function (Faker $faker) {
     return [
         'name' => $faker->name,
         'responsible' => $faker->name,
         'email' => $faker->email,
         'phone' => $faker->phoneNumber,
         'address' => $faker->address,
-        'obs' => $faker->sentence,
+        'obs' => $faker->sentence
     ];
 });
-
-
-$factory->define(Project::class, function(Faker\Generator $faker) {
-    return [
-        'name' => $faker->word,
-        'description' => $faker->paragraph,
-        'progress' => $faker->numberBetween(0, 100),
-        'status' => $faker->numberBetween(1, 5),
-        'due_date' => $faker->dateTime,
-        'owner_id' => $faker->numberBetween(1, 100),
-        'client_id' => $faker->numberBetween(1, 100)
-    ];
-});
-
-$factory->define(ProjectNote::class, function(Faker\Generator $faker) {
-    return [
-        'project_id' => $faker->numberBetween(1, 100),
-        'title' => $faker->sentence,
-        'note' => $faker->paragraph
-    ];
-});
-

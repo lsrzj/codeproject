@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
-use CodeProject\Entities\Eloquent\Client;
+use CodeProject\Entities\Client;
 
 class ClientTableSeeder extends Seeder {
 
@@ -11,8 +11,8 @@ class ClientTableSeeder extends Seeder {
      * @return void
      */
     public function run() {
-        DB::Table('clients')->delete();
-        factory(Client::class, 100)->create();
+        Client::truncate();
+        factory(Client::class, 10)->create();
     }
 
 }
