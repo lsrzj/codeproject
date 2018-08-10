@@ -10,7 +10,8 @@ namespace CodeProject\Services;
 
 
 use CodeProject\Repositories\ClientRepository;
-use Dotenv\Exception\ValidationException;
+use CodeProject\Validators\ClientValidator;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Prettus\Validator\Exceptions\ValidatorException;
 
 class ClientService {
@@ -34,21 +35,26 @@ class ClientService {
             return $this->repository->create($data);
         } catch (ValidatorException $e) {
             return [
-                'error' => true,
-                'message' => $e->getMessageBag()
+                'success' => FALSE,
+                'result' => $e->getMessageBag()
             ];
         }
     }
 
     public function update(array $data, $id) {
         try {
-            $this->repository->update($data, $id);
-            return $this->repository->create($data);
+            $this->validator->with($data)->passesOrFail();
+            return $this->repository->update($data, $id);
         } catch (ValidatorException $e) {
             return [
-                'error' => true,
-                'message' => $e->getMessageBag()
+                'success' => FALSE,
+                'result' => $e->getMessageBag()
             ];
+        } catch (ModelNotFoundException $e) {
+            return json_encode([
+                'success' => FALSE,
+                'result' => 'Cliente não encontrado!'
+            ], JSON_UNESCAPED_UNICODE);
         }
 
     }

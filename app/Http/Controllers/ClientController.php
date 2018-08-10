@@ -3,14 +3,30 @@
 namespace CodeProject\Http\Controllers;
 
 use CodeProject\Repositories\ClientRepository;
+use CodeProject\Services\ClientService;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
 class ClientController extends Controller {
 
+    /**
+     * @var ClientRepository
+     */
     private $repository;
 
-    public function __construct(ClientRepository $repository) {
+    /**
+     * @var ClientService
+     */
+    private $service;
+
+    /**
+     * ClientController constructor.
+     * @param ClientRepository $repository
+     * @param ClientService $service
+     */
+    public function __construct(ClientRepository $repository, ClientService $service) {
         $this->repository = $repository;
+        $this->service = $service;
     }
 
     /**
@@ -30,7 +46,7 @@ class ClientController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request) {
-        return $this->repository->create($request->all());
+        return $this->service->create($request->all());
     }
 
     /**
@@ -51,27 +67,8 @@ class ClientController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id) {
-        try {
-            $client = $this->reposritory->find($id);
-            $input = $request->all();
-            if ($client) {
-                $updated = $client->fill($input)->save();
-                if ($updated) {
-                    $resp['success'] = TRUE;
-                    $resp['result'] = $client;
-                } else {
-                    $resp['success'] = FALSE;
-                    $resp['result'] = 'Nao foi possivel atualizar';
-                }
-             } else {
-                 $resp['success'] = FALSE;
-                 $resp['result'] = 'Cliente nao encontrado!';
-             }
-        } catch (\Exception $ex) {
-            $resp['success'] = FALSE;
-            $resp['result'] = $ex->getMessage();
-        }
-        return response()->json($resp);
+        return $this->service->update($request->all(), $id);
+
     }
 
     /**
@@ -82,25 +79,18 @@ class ClientController extends Controller {
      */
     public function destroy($id) {
         try {
-            $client = $this->repository->find($id);
-            if ($client) {
-                $deleted = $client->delete();
-                if ($deleted) {
-                    $resp['success'] = TRUE;
-                    $resp['result'] = $client;
-                } else {
-                    $resp['success'] = FALSE;
-                    $resp['result'] = 'Nao foi possivel excluir';
-                }
-             } else {
-                 $resp['success'] = FALSE;
-                 $resp['result'] = 'Cliente nao encontrado!';
-             }
+            $this->repository->delete($id);
+            $resp['success'] = TRUE;
+            $resp['result'] = 'Cliente excluído com sucesso!';
+
+        } catch (ModelNotFoundException $e) {
+            $resp['success'] = FALSE;
+            $resp['result'] = 'Cliente não encontrado!';
         } catch (\Exception $ex) {
             $resp['success'] = FALSE;
             $resp['result'] = $ex->getMessage();
         }
-        return response()->json($resp);
+        return response()->json($resp, 200, [], JSON_UNESCAPED_UNICODE);
     }
 
 }
