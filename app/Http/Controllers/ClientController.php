@@ -7,9 +7,6 @@ use Illuminate\Http\Request;
 
 class ClientController extends Controller {
 
-    /**
-     * @var ClientRepository
-     */
     private $repository;
 
     public function __construct(ClientRepository $repository) {
@@ -17,8 +14,9 @@ class ClientController extends Controller {
     }
 
     /**
-     * Display a listing of the resource.
+     * Display a listing of the resource
      *
+     * @param ClientRepositoryEloquent $repository
      * @return \Illuminate\Http\Response
      */
     public function index() {
@@ -45,7 +43,6 @@ class ClientController extends Controller {
         return $this->repository->find($id);
     }
 
-
     /**
      * Update the specified resource in storage.
      *
@@ -55,49 +52,53 @@ class ClientController extends Controller {
      */
     public function update(Request $request, $id) {
         try {
-            $client = $this->repository->find($id);
+            $client = $this->reposritory->find($id);
+            $input = $request->all();
             if ($client) {
-                $input = $request->all();
                 $updated = $client->fill($input)->save();
                 if ($updated) {
                     $resp['success'] = TRUE;
                     $resp['result'] = $client;
                 } else {
                     $resp['success'] = FALSE;
-                    $resp['result'] = 'Cliente não pôde ser atualizado';
+                    $resp['result'] = 'Nao foi possivel atualizar';
                 }
-            } else {
-                $resp['success'] = FALSE;
-                $resp['result'] = 'Cliente não encontrado';
-            }
-        } catch (\Exception $e) {
+             } else {
+                 $resp['success'] = FALSE;
+                 $resp['result'] = 'Cliente nao encontrado!';
+             }
+        } catch (\Exception $ex) {
             $resp['success'] = FALSE;
-            $resp['result'] = $e->getMessage();
+            $resp['result'] = $ex->getMessage();
         }
         return response()->json($resp);
     }
 
     /**
      * Remove the specified resource from storage.
-     * 
-     * @param int $id Id do usuário a ser apagado
+     *
+     * @param  \CodeProject\Client  $client
      * @return \Illuminate\Http\Response
      */
     public function destroy($id) {
-        $repository->find($id);
         try {
             $client = $this->repository->find($id);
             if ($client) {
-                $client->delete();
-                $resp['success'] = TRUE;
-                $resp['result'] = 'Apagado com sucesso';
-            } else {
-                $resp['success'] = FALSE;
-                $resp['result'] = 'Cliente não encontrado';
-            }
-        } catch (\Exception $e) {
+                $deleted = $client->delete();
+                if ($deleted) {
+                    $resp['success'] = TRUE;
+                    $resp['result'] = $client;
+                } else {
+                    $resp['success'] = FALSE;
+                    $resp['result'] = 'Nao foi possivel excluir';
+                }
+             } else {
+                 $resp['success'] = FALSE;
+                 $resp['result'] = 'Cliente nao encontrado!';
+             }
+        } catch (\Exception $ex) {
             $resp['success'] = FALSE;
-            $resp['result'] = $e->getMessage();
+            $resp['result'] = $ex->getMessage();
         }
         return response()->json($resp);
     }

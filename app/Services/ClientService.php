@@ -1,15 +1,19 @@
 <?php
+/**
+ * Created by PhpStorm.
+ * User: carlos
+ * Date: 07/08/18
+ * Time: 15:21
+ */
 
 namespace CodeProject\Services;
 
 
 use CodeProject\Repositories\ClientRepository;
-use CodeProject\Validators\ClientValidator;
+use Dotenv\Exception\ValidationException;
 use Prettus\Validator\Exceptions\ValidatorException;
 
 class ClientService {
-
-
     /**
      * @var ClientRepository
      */
@@ -20,19 +24,17 @@ class ClientService {
      */
     protected $validator;
 
-
-    public function __construct(ClientRepository $repository, ClientValidator $validator) {
+    public function __construct(ClientRepository $repository, ClientValidator $validator)  {
         $this->repository = $repository;
         $this->validator = $validator;
     }
-
     public function create(array $data) {
         try {
             $this->validator->with($data)->passesOrFail();
             return $this->repository->create($data);
         } catch (ValidatorException $e) {
             return [
-                'error' => TRUE,
+                'error' => true,
                 'message' => $e->getMessageBag()
             ];
         }
@@ -40,13 +42,15 @@ class ClientService {
 
     public function update(array $data, $id) {
         try {
-            $this->validator->with($data)->passesOrFail();
-            return $this->repository->update($data, $id);
+            $this->repository->update($data, $id);
+            return $this->repository->create($data);
         } catch (ValidatorException $e) {
             return [
-                'error' => TRUE,
-                'messabe' => $e->getMessageBag()
+                'error' => true,
+                'message' => $e->getMessageBag()
             ];
         }
+
     }
+
 }

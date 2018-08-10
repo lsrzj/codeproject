@@ -58,6 +58,6 @@ class Kernel extends HttpKernel
         'guest' => \CodeProject\Http\Middleware\RedirectIfAuthenticated::class,
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
-        'csrf' => \CodeProject\Http\Middleware\VerifyCsrfToken::class,        
+        'csrf' => \CodeProject\Http\Middleware\VerifyCsrfToken::class,
     ];
 }

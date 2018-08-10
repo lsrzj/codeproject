@@ -12,7 +12,15 @@ class VerifyCsrfToken extends Middleware
      *
      * @var array
      */
-    protected $except = [
-        
-    ];
+    protected $except; 
+    
+    public function __construct(\Illuminate\Foundation\Application $app, \Illuminate\Contracts\Encryption\Encrypter $encrypter) {
+        parent::__construct($app, $encrypter);
+        if  (App::environment('staging')) {
+            $this->except = ['client'];    
+        }
+        else  if (App::environment('local')) {
+            $this->except = [];         
+        }
+    }
 }

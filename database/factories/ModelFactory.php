@@ -22,7 +22,6 @@ $factory->define(CodeProject\Entities\User::class, function (Faker $faker) {
     ];
 });
 
-
 $factory->define(CodeProject\Entities\Client::class, function (Faker $faker) {
     return [
         'name' => $faker->name,
@@ -30,6 +29,6 @@ $factory->define(CodeProject\Entities\Client::class, function (Faker $faker) {
         'email' => $faker->email,
         'phone' => $faker->phoneNumber,
         'address' => $faker->address,
-        'obs' => $faker->sentence
+        'obs' => $faker->sentence,
     ];
 });

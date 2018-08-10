@@ -1,18 +1,15 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: leandro
+ * User: carlos
  * Date: 07/08/18
- * Time: 17:05
+ * Time: 15:54
  */
 
 namespace CodeProject\Validators;
 
 
-use Prettus\Validator\LaravelValidator;
-
 class ClientValidator extends LaravelValidator {
-
     protected $rules = [
         'name' => 'required|max:255',
         'responsible' => 'required|max:255',
@@ -20,5 +17,4 @@ class ClientValidator extends LaravelValidator {
         'phone' => 'required',
         'address' => 'required'
     ];
-
 }

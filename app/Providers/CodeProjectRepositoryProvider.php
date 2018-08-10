@@ -23,10 +23,11 @@ class CodeProjectRepositoryProvider extends ServiceProvider
      *
      * @return void
      */
-    public function register()
-    {
+    public function register() {
         $this->app->bind(
             ClientRepository::class,
-            ClientRepositoryEloquent::class);
+            ClientRepositoryEloquent::class
+        );
+
     }
 }
