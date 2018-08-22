@@ -15,14 +15,27 @@ Route::get('/', function () {
     return view('welcome');
 });
     
-Route::get('client', 'ClientController@index'); 
-Route::post('client', 'ClientController@store');
-Route::get('client/{id}', 'ClientController@show');
-Route::delete('client/{id}', 'ClientController@destroy');
-Route::put('client/{id}', 'ClientController@update');
+Route::group(['prefix' => 'client'], function () {
+    Route::get('', 'ClientController@index');
+    Route::post('', 'ClientController@store');
+    Route::get('{id}', 'ClientController@show');
+    Route::delete('{id}', 'ClientController@destroy');
+    Route::put('{id}', 'ClientController@update');
+});
 
-Route::get('project', 'ProjectController@index');
-Route::post('project', 'ProjectController@store');
-Route::get('project/{id}', 'ProjectController@show');
-Route::delete('project/{id}', 'ProjectController@destroy');
-Route::put('project/{id}', 'ProjectController@update');
+
+Route::group(['prefix' => 'project'], function () {
+    route::get('{id}/note', 'ProjectNoteController@index');
+    route::post('{id}/note', 'ProjectNoteController@store');
+    route::get('{id}/note/{noteId}', 'ProjectNoteController@show');
+    route::put('update/note/{id}', 'ProjectNoteController@update');
+    route::delete('delete/note/{id}', 'ProjectNoteController@destroy');
+
+    Route::get('', 'ProjectController@index');
+    Route::post('', 'ProjectController@store');
+    Route::get('{id}', 'ProjectController@show');
+    Route::delete('{id}', 'ProjectController@destroy');
+    Route::put('{id}', 'ProjectController@update');
+});
+
+

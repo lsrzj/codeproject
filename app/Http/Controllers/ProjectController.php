@@ -21,6 +21,7 @@ class ProjectController extends Controller {
 
     /**
      * ProjectController constructor.
+     *
      * @param ProjectRepository $repository
      * @param ProjectService $service
      */
@@ -51,7 +52,7 @@ class ProjectController extends Controller {
     /**
      * Display the specified resource.
      *
-     * @param  \CodeProject\Entities\Project $project
+     * @param  integer $id
      * @return \Illuminate\Http\Response
      */
     public function show($id) {
@@ -62,7 +63,7 @@ class ProjectController extends Controller {
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \CodeProject\Entities\Project $project
+     * @param  integer $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id) {
@@ -73,7 +74,7 @@ class ProjectController extends Controller {
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \CodeProject\Entities\Project $project
+     * @param  integer $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id) {

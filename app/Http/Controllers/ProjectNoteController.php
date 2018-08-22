@@ -2,29 +2,30 @@
 
 namespace CodeProject\Http\Controllers;
 
-use CodeProject\Repositories\ClientRepository;
-use CodeProject\Services\ClientService;
+use CodeProject\Repositories\ProjectNoteNoteRepository;
+use CodeProject\Repositories\ProjectNoteRepository;
+use CodeProject\Services\ProjectNoteService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
-class ClientController extends Controller {
+class ProjectNoteController extends Controller {
 
     /**
-     * @var ClientRepository
+     * @var ProjectNoteRepository
      */
     private $repository;
 
     /**
-     * @var ClientService
+     * @var ProjectNoteService
      */
     private $service;
 
     /**
-     * ClientController constructor.
-     * @param ClientRepository $repository
-     * @param ClientService $service
+     * ProjectNoteController constructor.
+     * @param ProjectNoteRepository $repository
+     * @param ProjectNoteService $service
      */
-    public function __construct(ClientRepository $repository, ClientService $service) {
+    public function __construct(ProjectNoteRepository $repository, ProjectNoteService $service) {
         $this->repository = $repository;
         $this->service = $service;
     }
@@ -32,10 +33,11 @@ class ClientController extends Controller {
     /**
      * Display a listing of the resource
      *
+     * @param integer $id
      * @return \Illuminate\Http\Response
      */
-    public function index() {
-        return $this->repository->all();
+    public function index($id) {
+        return $this->repository->findWhere(['project_id' => $id]);
     }
 
     /**
@@ -51,18 +53,20 @@ class ClientController extends Controller {
     /**
      * Display the specified resource.
      *
-     * @param  $id integer
+     * @param  integer $id
+     * @param  integer $noteId
      * @return \Illuminate\Http\Response
      */
-    public function show($id) {
-        return $this->repository->find($id);
+
+    public function show($id, $noteId) {
+        return $this->repository->findWhere(['project_id' => $id, 'id' => $noteId]);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  $id integer
+     * @param  integer  $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id) {
@@ -73,18 +77,18 @@ class ClientController extends Controller {
     /**
      * Remove the specified resource from storage.
      *
-     * @param  $id integer
+     * @param  integer  $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id) {
         try {
             $this->repository->delete($id);
             $resp['success'] = TRUE;
-            $resp['result'] = 'Cliente excluído com sucesso!';
+            $resp['result'] = 'Nota excluída com sucesso!';
 
         } catch (ModelNotFoundException $e) {
             $resp['success'] = FALSE;
-            $resp['result'] = 'Cliente não encontrado!';
+            $resp['result'] = 'Nota não encontrada!';
         } catch (\Exception $ex) {
             $resp['success'] = FALSE;
             $resp['result'] = $ex->getMessage();
