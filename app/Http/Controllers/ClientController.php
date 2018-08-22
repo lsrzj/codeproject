@@ -32,7 +32,6 @@ class ClientController extends Controller {
     /**
      * Display a listing of the resource
      *
-     * @param ClientRepositoryEloquent $repository
      * @return \Illuminate\Http\Response
      */
     public function index() {
@@ -52,7 +51,7 @@ class ClientController extends Controller {
     /**
      * Display the specified resource.
      *
-     * @param  \CodeProject\Client  $client
+     * @param  \CodeProject\Entities\Client  $client
      * @return \Illuminate\Http\Response
      */
     public function show($id) {
@@ -63,7 +62,7 @@ class ClientController extends Controller {
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \CodeProject\Client  $client
+     * @param  \CodeProject\Entities\Client  $client
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id) {
@@ -74,7 +73,7 @@ class ClientController extends Controller {
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \CodeProject\Client  $client
+     * @param  \CodeProject\Entities\Client  $client
      * @return \Illuminate\Http\Response
      */
     public function destroy($id) {

@@ -32,3 +32,15 @@ $factory->define(CodeProject\Entities\Client::class, function (Faker $faker) {
         'obs' => $faker->sentence,
     ];
 });
+
+$factory->define(\CodeProject\Entities\Project::class, function (Faker $faker) {
+    return [
+        'owner_id' => $faker->numberBetween(1, 10),
+        'client_id' => $faker->numberBetween(1, 10),
+        'name' => $faker->name,
+        'description' => $faker->sentence,
+        'progress'=> $faker->numberBetween(0, 100),
+        'status' => $faker->word,
+        'due_date' => $faker->dateTime
+    ];
+});

@@ -11,9 +11,12 @@ class DatabaseSeeder extends Seeder
      * @return void
      */
     public function run() {
+        Schema::disableForeignKeyConstraints();
         Model::unguard();
+        $this->call(UserTableSeeder::class);
         $this->call(ClientTableSeeder::class);
+        $this->call(ProjectTableSeeder::class);
         Model::reguard();
-        // $this->call(UsersTableSeeder::class);
+        Schema::enableForeignKeyConstraints();
     }
 }
