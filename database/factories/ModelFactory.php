@@ -40,7 +40,7 @@ $factory->define(\CodeProject\Entities\Project::class, function (Faker $faker) {
         'name' => $faker->name,
         'description' => $faker->sentence,
         'progress'=> $faker->numberBetween(0, 100),
-        'status' => $faker->word,
+        'status' => $faker->numberBetween(1, 5),
         'due_date' => $faker->dateTime
     ];
 });
@@ -50,5 +50,15 @@ $factory->define(\CodeProject\Entities\ProjectNote::class, function (Faker $fake
         'project_id' => $faker->numberBetween(1, 10),
         'title' => $faker->sentence,
         'note' => $faker->paragraph
+    ];
+});
+
+$factory->define(\CodeProject\Entities\ProjectTask::class, function (Faker $faker) {
+    return [
+        'project_id' => $faker->numberBetween(1, 10),
+        'name' => $faker->name,
+        'start_date' => $faker->date(),
+        'due_date' => $faker->date(),
+        'status' => $faker->numberBetween(1, 5)
     ];
 });

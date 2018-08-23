@@ -31,6 +31,12 @@ Route::group(['prefix' => 'project'], function () {
     route::put('update/note/{id}', 'ProjectNoteController@update');
     route::delete('delete/note/{id}', 'ProjectNoteController@destroy');
 
+    route::get('{id}/task', 'ProjectTaskController@index');
+    route::post('{id}/task', 'ProjectTaskController@store');
+    route::get('{id}/task/{noteId}', 'ProjectTaskController@show');
+    route::put('update/task/{id}', 'ProjectTaskController@update');
+    route::delete('delete/task/{id}', 'ProjectTaskController@destroy');    
+
     Route::get('', 'ProjectController@index');
     Route::post('', 'ProjectController@store');
     Route::get('{id}', 'ProjectController@show');
