@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
-use CodeProject\Entities\Client;
+use CodeProject\Entities\Eloquent\Client;
 
 class ClientTableSeeder extends Seeder
 {

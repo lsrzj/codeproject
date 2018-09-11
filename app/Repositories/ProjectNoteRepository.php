@@ -2,14 +2,13 @@
 
 namespace CodeProject\Repositories;
 
-use Prettus\Repository\Contracts\RepositoryInterface;
+//use Prettus\Repository\Contracts\RepositoryInterface;
+use Doctrine\Common\Persistence\ObjectRepository;
 
-/**
- * Interface ProjectNoteRepository.
- *
- * @package namespace CodeProject\Repositories;
- */
-interface ProjectNoteRepository extends RepositoryInterface
-{
-    //
+/*interface ProjectNoteRepository extends RepositoryInterface {
+
+}*/
+
+interface ProjectNoteRepository extends ObjectRepository {
+
 }

@@ -13,7 +13,7 @@ use Faker\Generator as Faker;
 |
 */
 
-$factory->define(CodeProject\Entities\User::class, function (Faker $faker) {
+$factory->define(CodeProject\Entities\Eloquent\User::class, function (Faker $faker) {
     return [
         'name' => $faker->name,
         'email' => $faker->unique()->safeEmail,
@@ -22,7 +22,7 @@ $factory->define(CodeProject\Entities\User::class, function (Faker $faker) {
     ];
 });
 
-$factory->define(CodeProject\Entities\Client::class, function (Faker $faker) {
+$factory->define(CodeProject\Entities\Eloquent\Client::class, function (Faker $faker) {
     return [
         'name' => $faker->name,
         'responsible' => $faker->name,
@@ -33,7 +33,7 @@ $factory->define(CodeProject\Entities\Client::class, function (Faker $faker) {
     ];
 });
 
-$factory->define(\CodeProject\Entities\Project::class, function (Faker $faker) {
+$factory->define(\CodeProject\Entities\Eloquent\Project::class, function (Faker $faker) {
     return [
         'owner_id' => $faker->numberBetween(1, 10),
         'client_id' => $faker->numberBetween(1, 10),
@@ -45,7 +45,7 @@ $factory->define(\CodeProject\Entities\Project::class, function (Faker $faker) {
     ];
 });
 
-$factory->define(\CodeProject\Entities\ProjectNote::class, function (Faker $faker) {
+$factory->define(\CodeProject\Entities\Eloquent\ProjectNote::class, function (Faker $faker) {
     return [
         'project_id' => $faker->numberBetween(1, 10),
         'title' => $faker->sentence,
@@ -53,7 +53,7 @@ $factory->define(\CodeProject\Entities\ProjectNote::class, function (Faker $fake
     ];
 });
 
-$factory->define(\CodeProject\Entities\ProjectTask::class, function (Faker $faker) {
+$factory->define(\CodeProject\Entities\Eloquent\ProjectTask::class, function (Faker $faker) {
     return [
         'project_id' => $faker->numberBetween(1, 10),
         'name' => $faker->name,

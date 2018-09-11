@@ -5,7 +5,7 @@ namespace CodeProject\Repositories;
 use Prettus\Repository\Eloquent\BaseRepository;
 use Prettus\Repository\Criteria\RequestCriteria;
 use CodeProject\Repositories\ProjectNoteRepository;
-use CodeProject\Entities\ProjectNote;
+use CodeProject\Entities\Eloquent\ProjectNote;
 use CodeProject\Validators\ProjectNoteValidator;
 
 /**

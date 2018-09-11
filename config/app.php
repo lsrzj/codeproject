@@ -160,7 +160,10 @@ return [
         CodeProject\Providers\EventServiceProvider::class,
         CodeProject\Providers\RouteServiceProvider::class,
         \Prettus\Repository\Providers\RepositoryServiceProvider::class,
-        \CodeProject\Providers\CodeProjectRepositoryProvider::class
+        \CodeProject\Providers\CodeProjectRepositoryProvider::class,
+        LaravelDoctrine\Extensions\GedmoExtensionsServiceProvider::class,
+        LaravelDoctrine\Extensions\BeberleiExtensionsServiceProvider::class,
+        LaravelDoctrine\ACL\AclServiceProvider::class,
 
     ],
 

@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
-use CodeProject\Entities\User;
+use CodeProject\Entities\Eloquent\User;
 
 class UserTableSeeder extends Seeder
 {

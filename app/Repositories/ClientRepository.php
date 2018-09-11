@@ -1,16 +1,14 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: carlos
- * Date: 07/08/18
- * Time: 11:23
- */
 
 namespace CodeProject\Repositories;
 
+use Doctrine\Common\Persistence\ObjectRepository;
+//use Prettus\Repository\Contracts\RepositoryInterface;
 
-use Prettus\Repository\Contracts\RepositoryInterface;
+/*interface ClientRepository extends RepositoryInterface {
+    //put your code here
+}*/
 
-interface ClientRepository extends RepositoryInterface {
-
+interface ClientRepository extends ObjectRepository {
+    //put your code here
 }

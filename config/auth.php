@@ -66,8 +66,8 @@ return [
 
     'providers' => [
         'users' => [
-            'driver' => 'eloquent',
-            'model' => CodeProject\User::class,
+            'driver' => 'doctrine',
+            'model' => \CodeProject\Entities\Doctrine\User::class
         ],
 
         // 'users' => [

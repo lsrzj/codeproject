@@ -8,7 +8,7 @@
 
 namespace CodeProject\Repositories;
 
-use CodeProject\Entities\Client;
+use CodeProject\Entities\Eloquent\Client;
 use Prettus\Repository\Eloquent\BaseRepository;
 
 

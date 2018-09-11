@@ -36,7 +36,9 @@ class ProjectController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function index() {
-        return $this->repository->with(['user', 'client'])->all();
+        //Doctrine
+        return response()->json($this->repository->findAll());
+        //return $this->repository->with(['user', 'client'])->all();
     }
 
     /**
@@ -56,7 +58,8 @@ class ProjectController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function show($id) {
-        return $this->repository->with(['client', 'user'])->find($id);
+        return $this->repository->find($id);
+        //return $this->repository->with(['client', 'user'])->find($id);
     }
 
     /**
