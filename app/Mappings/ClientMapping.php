@@ -42,6 +42,6 @@ class ClientMapping extends EntityMapping
         $builder->timestamp('created_at')->timestampable()->onCreate();
         $builder->timestamp('updated_at')->timestampable()->onUpdate();
 
-        $builder->oneToMany(Project::class, 'projects')->mappedBy('client');
+        $builder->hasMany(Project::class, 'projects')->mappedBy('client');
     }
 }
