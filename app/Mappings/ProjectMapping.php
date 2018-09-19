@@ -39,12 +39,12 @@ class ProjectMapping extends EntityMapping
         $builder->text('description');
         $builder->decimal('progress');
         $builder->integer('status');
-        $builder->dateTime('due_date');
-        $builder->timestamp('created_at')->timestampable()->onCreate();
-        $builder->timestamp('updated_at')->timestampable()->onUpdate();
+        $builder->carbonDateTime('due_date');
+        $builder->carbonDateTime('created_at')->timestampable()->onCreate();
+        $builder->carbonDateTime('updated_at')->timestampable()->onUpdate();
 
         $builder->belongsTo(User::class)->foreignKey('owner_id')->inversedBy('projects');
         $builder->belongsTo(Client::class)->inversedBy('projects');
-        $builder->hasMany(ProjectNote::class)->mappedBy('project');
+        $builder->hasMany(ProjectNote::class, 'projectNotes')->mappedBy('project');
     }
 }

@@ -35,8 +35,8 @@ class UserMapping extends EntityMapping {
         $builder->string('email');
         $builder->string('password');
         $builder->rememberToken('remember_token');
-        $builder->timestamp('created_at')->timestampable()->onCreate();
-        $builder->timestamp('updated_at')->timestampable()->onUpdate();
+        $builder->carbonDateTime('created_at')->timestampable()->onCreate();
+        $builder->carbonDateTime('updated_at')->timestampable()->onUpdate();
 
         $builder->hasMany(Project::class)->mappedBy('user');
     }

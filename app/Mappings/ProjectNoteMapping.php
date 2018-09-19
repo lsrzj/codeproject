@@ -37,8 +37,8 @@ class ProjectNoteMapping extends EntityMapping
         $builder->increments('id');
         $builder->string('title');
         $builder->text('note');
-        $builder->timestamp('created_at')->timestampable()->onCreate();
-        $builder->timestamp('updated_at')->timestampable()->onUpdate();
+        $builder->carbonDateTime('created_at')->timestampable()->onCreate();
+        $builder->carbonDateTime('updated_at')->timestampable()->onUpdate();
 
         $builder->belongsTo(Project::class)->inversedBy('project');
     }

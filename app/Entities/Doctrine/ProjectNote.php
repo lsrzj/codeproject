@@ -2,7 +2,7 @@
 
 namespace CodeProject\Entities\Doctrine;
 
-use Carbon\Carbon;
+use DateTime;
 
 class ProjectNote implements \JsonSerializable {
 
@@ -22,12 +22,12 @@ class ProjectNote implements \JsonSerializable {
     private $note;
 
     /**
-     * @var Carbon
+     * @var DateTime
      */
     private $created_at;
 
     /**
-     * @var Carbon
+     * @var DateTime
      */
     private $updated_at;
 
@@ -36,7 +36,7 @@ class ProjectNote implements \JsonSerializable {
      */
     private $project;
 
-    public function __construct($title, $note, $project) {
+    public function __construct($title, $note, Project $project) {
         $this->title = $title;
         $this->note = $note;
         $this->project = $project;
@@ -47,8 +47,8 @@ class ProjectNote implements \JsonSerializable {
             'id' => $this->id,
             'title' => $this->title,
             'note' => $this->note,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at
+            'created_at' => $this->created_at->format('Y-m-d H:i:s'),
+            'updated_at' => $this->updated_at->format('Y-m-d H:i:s')
         ], JSON_UNESCAPED_UNICODE);
     }
 
@@ -57,8 +57,8 @@ class ProjectNote implements \JsonSerializable {
             'id' => $this->id,
             'title' => $this->title,
             'note' => $this->note,
-            'created_at' => $this->created_at,
-            'updated_at' => $this->updated_at
+            'created_at' => $this->created_at->format('Y-m-d H:i:s'),
+            'updated_at' => $this->updated_at->format('Y-m-d H:i:s')
         ];
     }
 
@@ -112,16 +112,16 @@ class ProjectNote implements \JsonSerializable {
     }
 
     /**
-     * @return Carbon
+     * @return DateTime
      */
-    public function getCreatedAt(): Carbon {
+    public function getCreatedAt(): DateTime {
         return $this->created_at;
     }
 
     /**
-     * @return Carbon
+     * @return DateTime
      */
-    public function getUpdatedAt(): Carbon {
+    public function getUpdatedAt(): DateTime {
         return $this->updated_at;
     }
 }

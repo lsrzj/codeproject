@@ -4,8 +4,7 @@ namespace CodeProject\Entities\Doctrine;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\PersistentCollection;
-use Carbon\Carbon;
-
+use DateTime;
 
 class Client implements \JsonSerializable {
     /**
@@ -44,19 +43,27 @@ class Client implements \JsonSerializable {
     private $obs;
 
     /**
-     * @var Carbon
+     * @var DateTime
      */
     private $created_at;
 
     /**
-     * @var Carbon
+     * @var DateTime
      */
     private $updated_at;
 
-
+    /**
+     * @var Projects[] ArrayCollection of projects
+     */
     private $projects;
 
-    public function __construct() {
+    public function __construct($name, $responsible, $email, $phone, $address, $obs) {
+        $this->name = $name;
+        $this->responsible = $responsible;
+        $this->address = $address;
+        $this->email = $email;
+        $this->obs = $obs;
+        $this->phone = $phone;
         $this->projects = new ArrayCollection();
     }
 
@@ -69,8 +76,8 @@ class Client implements \JsonSerializable {
             'phone' => $this->phone,
             'address' => $this->address,
             'obs' => $this->obs,
-            'created_at' => $this->created_at->__toString(),
-            'updated_at' => $this->updated_at->__toString(),
+            'created_at' => $this->created_at->format('Y-m-d H:i:s'),
+            'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
         ]);
     }
 
@@ -83,8 +90,8 @@ class Client implements \JsonSerializable {
             'phone' => $this->phone,
             'address' => $this->address,
             'obs' => $this->obs,
-            'created_at' => $this->created_at->__toString(),
-            'updated_at' => $this->updated_at->__toString(),
+            'created_at' => $this->created_at->format('Y-m-d H:i:s'),
+            'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
         ];
     }
 
@@ -187,16 +194,16 @@ class Client implements \JsonSerializable {
     }
 
     /**
-     * @return Carbon
+     * @return DateTime
      */
-    public function getCreatedAt(): Carbon {
+    public function getCreatedAt(): DateTime {
         return $this->created_at;
     }
 
     /**
-     * @return Carbon
+     * @return DateTime
      */
-    public function getUpdatedAt(): Carbon {
+    public function getUpdatedAt(): DateTime {
         return $this->updated_at;
     }
 

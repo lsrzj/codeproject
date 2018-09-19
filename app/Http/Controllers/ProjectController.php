@@ -4,6 +4,8 @@ namespace CodeProject\Http\Controllers;
 
 use CodeProject\Repositories\ProjectRepository;
 use CodeProject\Services\ProjectService;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityNotFoundException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
@@ -20,14 +22,20 @@ class ProjectController extends Controller {
     private $service;
 
     /**
+     * @var EntityManagerInterface
+     */
+    private $em;
+
+    /**
      * ProjectController constructor.
      *
      * @param ProjectRepository $repository
      * @param ProjectService $service
      */
-    public function __construct(ProjectRepository $repository, ProjectService $service) {
+    public function __construct(EntityManagerInterface $em, ProjectRepository $repository, ProjectService $service) {
         $this->repository = $repository;
         $this->service = $service;
+        $this->em = $em;
     }
 
     /**
@@ -38,6 +46,7 @@ class ProjectController extends Controller {
     public function index() {
         //Doctrine
         return response()->json($this->repository->findAll());
+        //Eloquent
         //return $this->repository->with(['user', 'client'])->all();
     }
 
@@ -82,7 +91,15 @@ class ProjectController extends Controller {
      */
     public function destroy($id) {
         try {
-            $this->repository->delete($id);
+            $project = $this->repository->find($id);
+            if ($project) {
+                $this->em->remove($project);
+                $this->em->flush();
+            } else {
+                throw new EntityNotFoundException('Projeto não encontrado!');
+            }
+            //Eloquent
+            //$this->repository->delete($id);
             $resp['success'] = TRUE;
             $resp['result'] = 'Projeto excluído com sucesso!';
 

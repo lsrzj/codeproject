@@ -39,8 +39,8 @@ class ClientMapping extends EntityMapping
         $builder->string('phone');
         $builder->string('address');
         $builder->text('obs');
-        $builder->timestamp('created_at')->timestampable()->onCreate();
-        $builder->timestamp('updated_at')->timestampable()->onUpdate();
+        $builder->carbonDateTime('created_at')->timestampable()->onCreate();
+        $builder->carbonDateTime('updated_at')->timestampable()->onUpdate();
 
         $builder->hasMany(Project::class, 'projects')->mappedBy('client');
     }

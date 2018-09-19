@@ -4,6 +4,8 @@ namespace CodeProject\Http\Controllers;
 
 use CodeProject\Repositories\ClientRepository;
 use CodeProject\Services\ClientService;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityNotFoundException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
@@ -20,13 +22,19 @@ class ClientController extends Controller {
     private $service;
 
     /**
+     * @var EntityManagerInterface
+     */
+    private $em;
+
+    /**
      * ClientController constructor.
      * @param ClientRepository $repository
      * @param ClientService $service
      */
-    public function __construct(ClientRepository $repository, ClientService $service) {
+    public function __construct(EntityManagerInterface $em, ClientRepository $repository, ClientService $service) {
         $this->repository = $repository;
         $this->service = $service;
+        $this->em = $em;
     }
 
     /**
@@ -81,7 +89,15 @@ class ClientController extends Controller {
      */
     public function destroy($id) {
         try {
-            $this->repository->delete($id);
+            $client = $this->repository->find($id);
+            if ($client) {
+                $this->em->remove($client);
+                $this->em->flush();
+            } else {
+                throw new EntityNotFoundException('Cliente não encontrado!');
+            }
+            //Eloquent
+            //$this->repository->delete($id);
             $resp['success'] = TRUE;
             $resp['result'] = 'Cliente excluído com sucesso!';
 

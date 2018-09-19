@@ -13,6 +13,7 @@ use CodeProject\Entities\Doctrine\Client;
 use CodeProject\Repositories\ClientRepository;
 use CodeProject\Validators\ClientValidator;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityNotFoundException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Prettus\Validator\Exceptions\ValidatorException;
 
@@ -55,13 +56,32 @@ class ClientService {
                 'success' => FALSE,
                 'result' => $e->getMessageBag()
             ];
+        } catch (\Exception $e) {
+            return [
+                'success' => FALSE,
+                'result' => $e->getMessage()
+            ];
         }
     }
 
     public function update(array $data, $id) {
         try {
             $this->validator->with($data)->passesOrFail();
-            return $this->repository->update($data, $id);
+            $client = $this->repository->find($id);
+            if ($client) {
+                $client->setName($data['name']);
+                $client->setResponsible($data['responsible']);
+                $client->setEmail($data['email']);
+                $client->setAddress($data['address']);
+                $client->setObs($data['obs']);
+                $client->setPhone($data['phone']);
+                $this->em->merge($client);
+                $this->em->flush();
+                return $client;
+            } else {
+                throw new EntityNotFoundException('Cliente não encontrado!');
+            }
+//            return $this->repository->update($data, $id);
         } catch (ValidatorException $e) {
             return [
                 'success' => FALSE,
@@ -72,6 +92,11 @@ class ClientService {
                 'success' => FALSE,
                 'result' => 'Cliente não encontrado!'
             ], JSON_UNESCAPED_UNICODE);
+        } catch (\Exception $e) {
+            return [
+               'success' => FALSE,
+               'result' => "Erro ao atualizar: {$e->getMessage()}"
+            ];
         }
 
     }

@@ -8,7 +8,7 @@ use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use Doctrine\Common\Collections\ArrayCollection;
-use Carbon\Carbon;
+use DateTime;
 
 class User implements
     AuthorizableContract,
@@ -39,12 +39,12 @@ class User implements
     private $remember_token;
 
     /**
-     * @var Carbon
+     * @var DateTime
      */
     private $created_at;
 
     /**
-     * @var Carbon
+     * @var DateTime
      */
     private $updated_at;
 
@@ -64,8 +64,8 @@ class User implements
             'id' => $this->id,
             'name' => $this->name,
             'email' => $this->email,
-            'created_at' => $this->created_at->__toString(),
-            'updated_at' => $this->updated_at->__toString(),
+            'created_at' => $this->created_at->format('Y-m-d H:i:s'),
+            'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
         ], JSON_UNESCAPED_UNICODE);
     }
 
@@ -74,8 +74,8 @@ class User implements
             'id' => $this->id,
             'name' => $this->name,
             'email' => $this->email,
-            'created_at' => $this->created_at->__toString(),
-            'updated_at' => $this->updated_at->__toString(),
+            'created_at' => $this->created_at->format('Y-m-d H:i:s'),
+            'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
         ];
     }
 
@@ -147,16 +147,16 @@ class User implements
     }
 
     /**
-     * @return Carbon
+     * @return DateTime
      */
-    public function getCreatedAt(): Carbon {
+    public function getCreatedAt(): DateTime {
         return $this->created_at;
     }
 
     /**
-     * @return Carbon
+     * @return DateTime
      */
-    public function getUpdatedAt(): Carbon {
+    public function getUpdatedAt(): DateTime {
         return $this->updated_at;
     }
 

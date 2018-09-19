@@ -5,7 +5,7 @@ namespace CodeProject\Entities\Doctrine;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\PersistentCollection;
-use Carbon\Carbon;
+use DateTime;
 
 class Project implements \JsonSerializable {
     /**
@@ -35,24 +35,26 @@ class Project implements \JsonSerializable {
     private $status;
 
     /**
-     * @var Carbon
+     * @var DateTime
      */
     private $due_date;
 
     /**
-     * @var Carbon
+     * @var DateTime
      */
     private $created_at;
 
     /**
-     * @var Carbon
+     * @var DateTime
      */
     private $updated_at;
+
     /**
      *
      * @var CodeProject\Entities\Doctrine\User
      */
     private $user;
+
     /**
      *
      * @var CodeProject\Entities\Doctrine\Client
@@ -64,7 +66,7 @@ class Project implements \JsonSerializable {
      */
     private $projectNotes;
 
-    public function __construct($name, $description, $progress, $status, $due_date, User $user, Client $client) {
+    public function __construct($name, $description, $progress, $status, DateTime $due_date, User $user, Client $client) {
         $this->name = $name;
         $this->description = $description;
         $this->progress = $progress;
@@ -73,6 +75,7 @@ class Project implements \JsonSerializable {
         $this->user = $user;
         $this->client = $client;
         $this->projectNotes = new ArrayCollection();
+        $this->due_date = new DateTime($due_date);
     }
 
     public function __toString() {
@@ -81,11 +84,11 @@ class Project implements \JsonSerializable {
             'description' => $this->description,
             'progress' => $this->progress,
             'status' => $this->status,
-            'due_date' => $this->due_date->__toString(),
-            'created_at' => $this->created_at->__toString(),
-            'updated_at' => $this->updated_at->__toString(),
-            //'user' => $this->user,
-            //'client' => $this->client
+            'due_date' => $this->due_date->format('Y-m-d H:i:s'),
+            'created_at' => $this->created_at->format('Y-m-d H:i:s'),
+            'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
+            'user' => $this->user,
+            'client' => $this->client
         ]);
     }
 
@@ -95,9 +98,9 @@ class Project implements \JsonSerializable {
             'description' => $this->description,
             'progress' => $this->progress,
             'status' => $this->status,
-            'due_date' => $this->due_date->__toString(),
-            'created_at' => $this->created_at->__toString(),
-            'updated_at' => $this->updated_at->__toString(),
+            'due_date' => $this->due_date->format('Y-m-d H:i:s'),
+            'created_at' => $this->created_at->format('Y-m-d H:i:s'),
+            'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
             'user' => $this->user,
             'client' => $this->client
         ];
@@ -173,18 +176,17 @@ class Project implements \JsonSerializable {
     public function setDueDate($due_date) {
         $this->due_date = $due_date;
     }
-
     /**
-     * @return Carbon
+     * @return DateTime
      */
-    public function getCreatedAt(): Carbon {
+    public function getCreatedAt(): DateTime {
         return $this->created_at;
     }
 
     /**
-     * @return Carbon
+     * @return DateTime
      */
-    public function getUpdatedAt(): Carbon {
+    public function getUpdatedAt(): DateTime {
         return $this->updated_at;
     }
 
