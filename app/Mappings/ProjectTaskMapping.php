@@ -2,15 +2,12 @@
 
 namespace CodeProject\Mappings;
 
-use CodeProject\Entities\Doctrine\Client;
 use CodeProject\Entities\Doctrine\Project;
-use CodeProject\Entities\Doctrine\ProjectNote;
 use CodeProject\Entities\Doctrine\ProjectTask;
-use CodeProject\Entities\Doctrine\User;
 use LaravelDoctrine\Fluent\EntityMapping;
 use LaravelDoctrine\Fluent\Fluent;
 
-class ProjectMapping extends EntityMapping
+class ProjectTaskMapping extends EntityMapping
 {
     /**
      * Returns the fully qualified name of the class that this mapper maps.
@@ -20,7 +17,7 @@ class ProjectMapping extends EntityMapping
     public function mapFor()
     {
         // Here we tell Doctrine that this mapping is for the Client object.
-        return Project::class;
+        return ProjectTask::class;
     }
     /**
      * Load the object's metadata through the Metadata Builder object.
@@ -37,16 +34,12 @@ class ProjectMapping extends EntityMapping
          */
         $builder->increments('id');
         $builder->string('name');
-        $builder->text('description');
-        $builder->decimal('progress');
-        $builder->integer('status');
+        $builder->carbonDateTime('start_date');
         $builder->carbonDateTime('due_date');
+        $builder->integer('status');
         $builder->carbonDateTime('created_at')->timestampable()->onCreate();
         $builder->carbonDateTime('updated_at')->timestampable()->onUpdate();
 
-        $builder->belongsTo(User::class)->foreignKey('owner_id')->inversedBy('projects');
-        $builder->belongsTo(Client::class)->inversedBy('projects');
-        $builder->hasMany(ProjectNote::class, 'projectNotes')->mappedBy('project');
-        $builder->hasMany(ProjectTask::class, 'projectTasks')->mappedBy('project');
+        $builder->belongsTo(Project::class)->inversedBy('project');
     }
 }

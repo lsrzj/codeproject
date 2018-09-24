@@ -28,7 +28,8 @@ return [
                 CodeProject\Mappings\ClientMapping::class,
                 CodeProject\Mappings\UserMapping::class,
                 CodeProject\Mappings\ProjectMapping::class,
-                \CodeProject\Mappings\ProjectNoteMapping::class
+                CodeProject\Mappings\ProjectNoteMapping::class,
+                CodeProject\Mappings\ProjectTaskMapping::class
             ],
             'connection' => env('DB_CONNECTION', 'mysql'),
             'namespaces' => [],

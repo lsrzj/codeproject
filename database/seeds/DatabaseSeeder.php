@@ -17,7 +17,7 @@ class DatabaseSeeder extends Seeder
         $this->call(ClientTableSeeder::class);
         $this->call(ProjectTableSeeder::class);
         $this->call(ProjectNoteTableSeeder::class);
-        //$this->call(ProjectTaskTableSeeder::class);
+        $this->call(ProjectTaskTableSeeder::class);
         Model::reguard();
         Schema::enableForeignKeyConstraints();
     }

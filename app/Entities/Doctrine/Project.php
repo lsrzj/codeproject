@@ -66,6 +66,11 @@ class Project implements \JsonSerializable {
      */
     private $projectNotes;
 
+    /**
+     * @var PersistentCollection
+     */
+    private $projectTasks;
+
     public function __construct($name, $description, $progress, $status, DateTime $due_date, User $user, Client $client) {
         $this->name = $name;
         $this->description = $description;
@@ -74,8 +79,9 @@ class Project implements \JsonSerializable {
         $this->due_date = $due_date;
         $this->user = $user;
         $this->client = $client;
+        $this->due_date = $due_date;
         $this->projectNotes = new ArrayCollection();
-        $this->due_date = new DateTime($due_date);
+        $this->projectTasks = new ArrayCollection();
     }
 
     public function __toString() {
@@ -176,6 +182,7 @@ class Project implements \JsonSerializable {
     public function setDueDate($due_date) {
         $this->due_date = $due_date;
     }
+
     /**
      * @return DateTime
      */
@@ -232,4 +239,17 @@ class Project implements \JsonSerializable {
         $this->projectNotes = $projectNotes;
     }
 
+    /**
+     * @return ArrayCollection
+     */
+    public function getTasks(): PersistentCollection {
+        return $this->projectTasks;
+    }
+
+    /**
+     * @param ArrayCollection $projectTasks
+     */
+    public function setTasks(PersistentCollection $projectTasks): void {
+        $this->projectTasks = $projectTasks;
+    }
 }

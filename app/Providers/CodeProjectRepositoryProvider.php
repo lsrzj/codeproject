@@ -5,6 +5,7 @@ namespace CodeProject\Providers;
 use CodeProject\Entities\Doctrine\Client;
 use CodeProject\Entities\Doctrine\Project;
 use CodeProject\Entities\Doctrine\ProjectNote;
+use CodeProject\Entities\Doctrine\ProjectTask;
 use CodeProject\Repositories\ClientRepository;
 use CodeProject\Repositories\ClientRepositoryDoctrine;
 use CodeProject\Repositories\ClientRepositoryEloquent;
@@ -15,6 +16,7 @@ use CodeProject\Repositories\ProjectRepository;
 use CodeProject\Repositories\ProjectRepositoryDoctrine;
 use CodeProject\Repositories\ProjectRepositoryEloquent;
 use CodeProject\Repositories\ProjectTaskRepository;
+use CodeProject\Repositories\ProjectTaskRepositoryDoctrine;
 use CodeProject\Repositories\ProjectTaskRepositoryEloquent;
 use Illuminate\Support\ServiceProvider;
 
@@ -70,9 +72,16 @@ class CodeProjectRepositoryProvider extends ServiceProvider
             );
         });
 
-        $this->app->bind(
+        /*$this->app->bind(
             ProjectTaskRepository::class,
-            ProjectTaskRepositoryEloquent::class);
+            ProjectTaskRepositoryEloquent::class);*/
+
+        $this->app->bind(ProjectTaskRepository::class, function($app) {
+            // This is what Doctrine's EntityRepository needs in its constructor.
+            return new ProjectTaskRepositoryDoctrine(
+                $app['em'], $app['em']->getClassMetaData(ProjectTask::class)
+            );
+        });
 
     }
 
