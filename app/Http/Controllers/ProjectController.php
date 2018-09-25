@@ -53,7 +53,7 @@ class ProjectController extends Controller {
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request) {
@@ -74,7 +74,7 @@ class ProjectController extends Controller {
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @param  integer $id
      * @return \Illuminate\Http\Response
      */
@@ -111,6 +111,61 @@ class ProjectController extends Controller {
             $resp['result'] = $ex->getMessage();
         }
         return response()->json($resp, 200, [], JSON_UNESCAPED_UNICODE);
+    }
+
+    public function listMembers($id) {
+        try {
+            $project = $this->repository->find($id);
+            if ($project) {
+                $membersCollection = $project->getMembers();
+                foreach ($membersCollection as $member) {
+                    $members[] = $member;
+                }
+            }
+            //$members = $this->repository->find($id)->members()->get();
+            if (count($members)) {
+                return $members;
+            } else {
+                return [];
+            }
+        } catch (ModelNotFoundException $e) {
+            return [
+                'success' => FALSE,
+                'result' => 'Projeto não encontrado!'
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => FALSE,
+                'result' => $e->getMessage()
+            ];
+        }
+    }
+
+    public function addMember($id, $memberId) {
+        try {
+            return $this->service->addMember($id, $memberId);
+        } catch (ModelNotFoundException $e) {
+            return [
+                'success' => FALSE,
+                'result' => 'Projeto ou usuário não encontrado!'
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => FALSE,
+                'result' => $e->getMessage()
+            ];
+        }
+    }
+
+    public function removeMember($id, $memberId) {
+        try {
+            return $this->service->removeMember($id, $memberId);
+        } catch (\Exception $e) {
+            return [
+                'success' => FALSE,
+                'result' => $e->getMessage()
+            ];
+        }
     }
 
 }

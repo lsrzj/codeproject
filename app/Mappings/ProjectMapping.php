@@ -46,6 +46,7 @@ class ProjectMapping extends EntityMapping
 
         $builder->belongsTo(User::class)->foreignKey('owner_id')->inversedBy('projects');
         $builder->belongsTo(Client::class)->inversedBy('projects');
+        $builder->belongsToMany(User::class, 'members')->inversedBy('memberProjects')->joinTable('project_members');
         $builder->hasMany(ProjectNote::class, 'projectNotes')->mappedBy('project');
         $builder->hasMany(ProjectTask::class, 'projectTasks')->mappedBy('project');
     }

@@ -39,5 +39,6 @@ class UserMapping extends EntityMapping {
         $builder->carbonDateTime('updated_at')->timestampable()->onUpdate();
 
         $builder->hasMany(Project::class)->mappedBy('user');
+        $builder->belongsToMany(Project::class, 'memberProjects')->mappedBy('members')->joinTable('project_members');
     }
 }

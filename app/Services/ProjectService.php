@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: leandro
- * Date: 16/08/18
- * Time: 22:06
- */
 
 namespace CodeProject\Services;
 
@@ -35,11 +29,12 @@ class ProjectService {
      */
     protected $em;
 
-    public function __construct(EntityManagerInterface $em, ProjectRepository $repository, ProjectValidator $validator)  {
+    public function __construct(EntityManagerInterface $em, ProjectRepository $repository, ProjectValidator $validator) {
         $this->repository = $repository;
         $this->validator = $validator;
         $this->em = $em;
     }
+
     public function create(array $data) {
         try {
             $this->validator->with($data)->passesOrFail();
@@ -60,8 +55,8 @@ class ProjectService {
                 return $project;
             } else {
                 return [
-                  'success' => FALSE,
-                  'result' => 'Cliente ou proprietário do projeto não encontrado!'
+                    'success' => FALSE,
+                    'result' => 'Cliente ou proprietário do projeto não encontrado!'
                 ];
             }
             //return $this->repository->create($data);
@@ -109,10 +104,84 @@ class ProjectService {
             ], JSON_UNESCAPED_UNICODE);
         } catch (\Exception $e) {
             return json_encode([
-               'success' => FALSE,
-               'result' => "Erro ao atualizar: {$e->getMessage()}"
+                'success' => FALSE,
+                'result' => "Erro ao atualizar: {$e->getMessage()}"
             ], JSON_UNESCAPED_UNICODE);
         }
 
+    }
+
+    public function addMember($id, $memberId) {
+        $project = $this->repository->find($id);
+        $user = $this->em->find(User::class, $memberId);
+        if ($project && $user) {
+            if (!$this->isMember($id, $memberId)) {
+                $project->addMember($user);
+                $this->em->persist($project);
+                $this->em->flush();
+                $membersCollection = $project->getMembers();
+                if ($membersCollection->count()) {
+                    foreach ($membersCollection as $member) {
+                        $members[] = $member;
+                    }
+                    return $members;
+                } else {
+                    return [];
+                }
+            }
+        } else {
+            return [
+                'success' => FALSE,
+                'result' => 'Projeto ou membro não encontrado!'
+            ];
+        }
+        /*$project = $this->repository->find($id);
+        if (!$this->isMember($id, $memberId)) {
+            $project->members()->attach($memberId);
+        }
+        return $project->members()->get();*/
+    }
+
+    public function removeMember($id, $memberId) {
+        $project = $this->repository->find($id);
+        $user = $this->em->find(User::class, $memberId);
+        if ($project && $user) {
+            $project->removeMember($user);
+            $this->em->persist($project);
+            $this->em->flush();
+            $membersCollection = $project->getMembers();
+            if ($membersCollection->count()) {
+                foreach ($membersCollection as $member) {
+                    $members[] = $member;
+                }
+                return $members;
+            } else {
+                return [];
+            }
+        } else {
+            return [
+                'success' => FALSE,
+                'result' => 'Membro ou projeto não encontrado!'
+            ];
+        }
+        //$project->members()->detach($memberId);
+        //return $project->members()->get();
+    }
+
+    public function isMember($id, $memberId) {
+        $project = $this->repository->find($id);
+        $user = $this->em->find(User::class, $memberId);
+        if ($project && $user) {
+            if ($project->getMembers()->contains($user)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        /*$project = $this->repository->find($id)->members()->find(['memberId' => $memberId]);
+        if (count($project)) {
+            return true;
+        }
+        return false;*/
     }
 }

@@ -62,3 +62,10 @@ $factory->define(\CodeProject\Entities\Eloquent\ProjectTask::class, function (Fa
         'status' => $faker->numberBetween(1, 5)
     ];
 });
+
+$factory->define(\CodeProject\Entities\Eloquent\ProjectMembers::class, function (Faker $faker) {
+    return [
+        'project_id' => $faker->numberBetween(1, 10),
+        'user_id' => $faker->numberBetween(1, 10)
+    ];
+});

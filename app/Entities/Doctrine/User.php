@@ -53,10 +53,16 @@ class User implements
      */
     private $projects;
 
+    /**
+     * @var ArrayCollection
+     */
+    private $memberProjects;
+
     public function __construct($name, $email) {
         $this->name = $name;
         $this->email = $email;
         $this->projects = new ArrayCollection();
+        $this->memberProjects = new ArrayCollection();
     }
 
     public function __toString() {
@@ -172,5 +178,19 @@ class User implements
      */
     public function setProjects(PersistentCollection $projects): void {
         $this->projects = $projects;
+    }
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getMemberProjects(): ArrayCollection {
+        return $this->memberProjects;
+    }
+
+    /**
+     * @param ArrayCollection $memberProjects
+     */
+    public function setMemberProjects(ArrayCollection $memberProjects): void {
+        $this->memberProjects = $memberProjects;
     }
 }

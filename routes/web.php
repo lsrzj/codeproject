@@ -5,8 +5,8 @@
 | Web Routes
 |--------------------------------------------------------------------------
 |
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
+| Here is where you can register web Routes for your application. These
+| Routes are loaded by the RouteServiceProvider within a group which
 | contains the "web" middleware group. Now create something great!
 |
 */
@@ -25,17 +25,22 @@ Route::group(['prefix' => 'client'], function () {
 
 
 Route::group(['prefix' => 'project'], function () {
-    route::get('{id}/note', 'ProjectNoteController@index');
-    route::post('{id}/note', 'ProjectNoteController@store');
-    route::get('{id}/note/{noteId}', 'ProjectNoteController@show');
-    route::put('update/note/{id}', 'ProjectNoteController@update');
-    route::delete('delete/note/{id}', 'ProjectNoteController@destroy');
+    Route::get('{id}/note', 'ProjectNoteController@index');
+    Route::post('{id}/note', 'ProjectNoteController@store');
+    Route::get('{id}/note/{noteId}', 'ProjectNoteController@show');
+    Route::put('update/note/{id}', 'ProjectNoteController@update');
+    Route::delete('delete/note/{id}', 'ProjectNoteController@destroy');
 
-    route::get('{id}/task', 'ProjectTaskController@index');
-    route::post('{id}/task', 'ProjectTaskController@store');
-    route::get('{id}/task/{noteId}', 'ProjectTaskController@show');
-    route::put('update/task/{id}', 'ProjectTaskController@update');
-    route::delete('delete/task/{id}', 'ProjectTaskController@destroy');    
+    Route::get('{id}/task', 'ProjectTaskController@index');
+    Route::post('{id}/task', 'ProjectTaskController@store');
+    Route::get('{id}/task/{noteId}', 'ProjectTaskController@show');
+    Route::put('update/task/{id}', 'ProjectTaskController@update');
+    Route::delete('delete/task/{id}', 'ProjectTaskController@destroy');
+
+    Route::get('{id}/members', 'ProjectController@listMembers');
+    Route::post('{id}/add/members/{memberId}', 'ProjectController@addMember');
+    Route::delete('{id}/remove/members/{memberId}', 'ProjectController@removeMember');
+    
 
     Route::get('', 'ProjectController@index');
     Route::post('', 'ProjectController@store');
