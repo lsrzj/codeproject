@@ -9,12 +9,13 @@ use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use LaravelDoctrine\ORM\Auth\Authenticatable;
 use LaravelDoctrine\Extensions\Timestamps\Timestamps;
 use LaravelDoctrine\ORM\Notifications\Notifiable;
+use Laravel\Passport\HasApiTokens;
 
 class User implements
   AuthenticatableContract,
   CanResetPasswordContract,
   \JsonSerializable {
-  use Authenticatable, CanResetPassword, Timestamps, Notifiable;
+  use Authenticatable, CanResetPassword, Timestamps, Notifiable, HasApiTokens;
 
 
   /**
