@@ -2,7 +2,6 @@
 
 namespace CodeProject\Entities\Doctrine;
 
-
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\PersistentCollection;
 use DateTime;
@@ -239,21 +238,21 @@ class Project implements \JsonSerializable {
     }
 
     /**
-     * @param ArrayCollection $projectNotes
+     * @param PersistentCollection $projectNotes
      */
     public function setProjectNotes(PersistentCollection $projectNotes): void {
         $this->projectNotes = $projectNotes;
     }
 
     /**
-     * @return ArrayCollection
+     * @return PersistentCollection
      */
     public function getTasks(): PersistentCollection {
         return $this->projectTasks;
     }
 
     /**
-     * @param ArrayCollection $projectTasks
+     * @param PersistentCollection $projectTasks
      */
     public function setTasks(PersistentCollection $projectTasks): void {
         $this->projectTasks = $projectTasks;
