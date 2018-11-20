@@ -2,6 +2,8 @@
 
 namespace CodeProject\Entities\Doctrine;
 
+
+use CodeProject\Repositories\UserRepositoryDoctrine;
 use Doctrine\ORM\PersistentCollection;
 use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
@@ -10,6 +12,8 @@ use LaravelDoctrine\ORM\Auth\Authenticatable;
 use LaravelDoctrine\Extensions\Timestamps\Timestamps;
 use LaravelDoctrine\ORM\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
+use Doctrine\Common\Collections\ArrayCollection;
+use CodeProject\Repositories\UserRepository;
 
 class User implements
   AuthenticatableContract,
@@ -58,9 +62,11 @@ class User implements
    */
   private $memberProjects;
 
-  public function __construct($name, $email) {
-    $this->name = $name;
-    $this->email = $email;
+  /**
+   * User constructor.
+   * @param EntityManagerInterface $em
+   */
+  public function __construct() {
     $this->projects = new ArrayCollection();
     $this->memberProjects = new ArrayCollection();
   }
@@ -192,5 +198,11 @@ class User implements
    */
   public function setMemberProjects(ArrayCollection $memberProjects): void {
     $this->memberProjects = $memberProjects;
+  }
+
+  public function findForPassport($userIdentifier)
+  {
+    $repo = app(UserRepository::class);
+    return $repo->findOneBy(['email' => $userIdentifier]);
   }
 }
