@@ -44,7 +44,7 @@ class ProjectMapping extends EntityMapping
         $builder->carbonDateTime('created_at')->timestampable()->onCreate();
         $builder->carbonDateTime('updated_at')->timestampable()->onUpdate();
 
-        $builder->belongsTo(User::class)->foreignKey('owner_id')->inversedBy('projects');
+        $builder->belongsTo(User::class, 'owner')->foreignKey('owner_id')->inversedBy('projects');
         $builder->belongsTo(Client::class)->inversedBy('projects');
         $builder->belongsToMany(User::class, 'members')->inversedBy('memberProjects')->joinTable('project_members');
         $builder->hasMany(ProjectNote::class, 'projectNotes')->mappedBy('project');

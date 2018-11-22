@@ -115,7 +115,7 @@ class ProjectService {
         $project = $this->repository->find($id);
         $user = $this->em->find(User::class, $memberId);
         if ($project && $user) {
-            if (!$this->isMember($id, $memberId)) {
+            if (!$this->repository->isMember($id, $memberId)) {
                 $project->addMember($user);
                 $this->em->persist($project);
                 $this->em->flush();
@@ -128,6 +128,11 @@ class ProjectService {
                 } else {
                     return [];
                 }
+            } else {
+              return [
+                'success' => FALSE,
+                'result' => 'Membro já faz parte do projeto'
+              ];
             }
         } else {
             return [
@@ -136,7 +141,7 @@ class ProjectService {
             ];
         }
         /*$project = $this->repository->find($id);
-        if (!$this->isMember($id, $memberId)) {
+        if (!$this->repository->isMember($id, $memberId)) {
             $project->members()->attach($memberId);
         }
         return $project->members()->get();*/
@@ -166,22 +171,5 @@ class ProjectService {
         }
         //$project->members()->detach($memberId);
         //return $project->members()->get();
-    }
-
-    public function isMember($id, $memberId) {
-        $project = $this->repository->find($id);
-        $user = $this->em->find(User::class, $memberId);
-        if ($project && $user) {
-            if ($project->getMembers()->contains($user)) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-        /*$project = $this->repository->find($id)->members()->find(['memberId' => $memberId]);
-        if (count($project)) {
-            return true;
-        }
-        return false;*/
     }
 }

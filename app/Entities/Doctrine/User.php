@@ -14,6 +14,7 @@ use LaravelDoctrine\ORM\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 use Doctrine\Common\Collections\ArrayCollection;
 use CodeProject\Repositories\UserRepository;
+use DateTime;
 
 class User implements
   AuthenticatableContract,
@@ -204,5 +205,9 @@ class User implements
   {
     $repo = app(UserRepository::class);
     return $repo->findOneBy(['email' => $userIdentifier]);
+  }
+
+  public function getUsername() {
+    return $this->email;
   }
 }

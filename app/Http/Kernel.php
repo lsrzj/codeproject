@@ -2,6 +2,7 @@
 
 namespace CodeProject\Http;
 
+use CodeProject\Http\Middleware\CheckProjectOwner;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -59,5 +60,6 @@ class Kernel extends HttpKernel
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'csrf' => \CodeProject\Http\Middleware\VerifyCsrfToken::class,
+        //'CheckProjectOwner' => CheckProjectOwner::class, foi feito apenas para exibir o conceito de middleware
     ];
 }
