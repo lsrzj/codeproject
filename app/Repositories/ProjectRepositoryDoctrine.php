@@ -2,6 +2,7 @@
 
 namespace CodeProject\Repositories;
 
+use CodeProject\Entities\Doctrine\Project;
 use Doctrine\ORM\EntityRepository;
 use CodeProject\Entities\Doctrine\User;
 
@@ -13,16 +14,11 @@ class ProjectRepositoryDoctrine extends EntityRepository implements ProjectRepos
    * @return bool
    * @throws \Exception
    */
-  public function isMember($id, User $user) {
-    $project = $this->find($id);
-    if ($project) {
-      if ($project->getMembers()->contains($user)) {
-        return true;
-      } else {
-        return false;
-      }
+  public function isMember(Project $project, User $user) {
+    if ($project->getMembers()->contains($user)) {
+      return true;
     } else {
-      throw new \Exception('Projeto não encontrado');
+      return false;
     }
   }
 
@@ -32,20 +28,11 @@ class ProjectRepositoryDoctrine extends EntityRepository implements ProjectRepos
    * @return bool
    * @throws \Exception
    */
-  public function isOwner($id, User $user) {
-    try {
-      $project = $this->find($id);
-      if ($project) {
-        if ($project->getOwner() == $user) {
-          return true;
-        } else {
-          return false;
-        }
-      } else {
-        throw new \Exception('Projeto ou usuário não encontrado');
-      }
-    } catch (\Exception $e) {
-      throw $e;
+  public function isOwner(Project $project, User $user) {
+    if ($project->getOwner() == $user) {
+      return true;
+    } else {
+      return false;
     }
   }
 }

@@ -2,12 +2,14 @@
 
 namespace CodeProject\Http\Controllers;
 
+use CodeProject\Entities\Doctrine\Project;
+use CodeProject\Entities\Doctrine\ProjectNote;
+use CodeProject\Entities\Doctrine\ProjectTask;
 use CodeProject\Entities\Doctrine\User;
 use CodeProject\Repositories\ProjectRepository;
 use CodeProject\Services\ProjectService;
+use CodeProject\Validators\ProjectNoteValidator;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityNotFoundException;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
 class ProjectController extends Controller {
@@ -27,12 +29,14 @@ class ProjectController extends Controller {
    */
   private $em;
 
+
   /**
    * ProjectController constructor.
    *
    * @param EntityManagerInterface $em
    * @param ProjectRepository $repository
    * @param ProjectService $service
+   * @param ProjectNoteValidator $noteValidator
    */
   public function __construct(EntityManagerInterface $em, ProjectRepository $repository, ProjectService $service) {
     $this->repository = $repository;
@@ -47,10 +51,7 @@ class ProjectController extends Controller {
    * @return \Illuminate\Http\Response
    */
   public function index(Request $request) {
-    //Doctrine
     return response()->json($this->repository->findBy(['owner' => $request->user()]));
-    //Eloquent
-    //return $this->repository->with(['user', 'client'])->all();
   }
 
   /**
@@ -70,14 +71,22 @@ class ProjectController extends Controller {
    * @param Request $request
    * @return \Illuminate\Http\Response
    */
-  public function show($id, Request $request) {
+  public function show(int $id, Request $request) {
     try {
-      if ($this->checkProjectPermissions($id, $request->user())) {
-        return $this->repository->find($id);
+      $project = $this->repository->find($id);
+      if ($project) {
+        if ($this->checkProjectPermissions($project, $request->user())) {
+          return $project;
+        } else {
+          return [
+            'success' => FALSE,
+            'result' => 'Não foi possível acessar o projeto, pois você não é o proprietário ou não é membro'
+          ];
+        }
       } else {
         return [
           'success' => FALSE,
-          'result' => 'Não foi possível acessar o projeto, pois você não é o proprietário ou não é membro'
+          'result' => 'Projeto não encontrado!'
         ];
       }
     } catch (\Exception $e) {
@@ -86,7 +95,6 @@ class ProjectController extends Controller {
         'result' => $e->getMessage()
       ];
     }
-    //return $this->repository->with(['client', 'user'])->find($id);
   }
 
   /**
@@ -96,9 +104,30 @@ class ProjectController extends Controller {
    * @param  integer $id
    * @return \Illuminate\Http\Response
    */
-  public function update(Request $request, $id) {
-    return $this->service->update($request->all(), $id);
-
+  public function update(Request $request, int $id) {
+    try {
+      $project = $this->repository->find($id);
+      if ($project) {
+        if ($this->checkProjectOwner($id, $request->user())) {
+          return $this->service->update($request->all(), $id);
+        } else {
+          return [
+            'success' => FALSE,
+            'result' => 'Você não tem permissão para executar esta ação, requisite ao proprietário do projeto!'
+          ];
+        }
+      } else {
+        return [
+          'success' => FALSE,
+          'result' => 'Projeto não encontrado!'
+        ];
+      }
+    } catch (\Exception $e) {
+      return [
+        'success' => FALSE,
+        'result' => $e->getMessage()
+      ];
+    }
   }
 
   /**
@@ -107,23 +136,28 @@ class ProjectController extends Controller {
    * @param  integer $id
    * @return \Illuminate\Http\Response
    */
-  public function destroy($id) {
+  public function destroy(Request $request) {
     try {
-      $project = $this->repository->find($id);
+      $project = $this->repository->find($request['id']);
       if ($project) {
-        $this->em->remove($project);
-        $this->em->flush();
+        if ($this->checkProjectOwner($project, $request->user())) {
+          $this->em->remove($project);
+          $this->em->flush();
+        } else {
+          return [
+            'success' => FALSE,
+            'result' => 'Você não tem permissão para executar esta ação, requisite ao proprietário do projeto!'
+          ];
+        }
       } else {
-        throw new EntityNotFoundException('Projeto não encontrado!');
+        return [
+          'success' => FALSE,
+          'result' => 'Projeto não encontrado!'
+        ];
       }
-      //Eloquent
-      //$this->repository->delete($id);
       $resp['success'] = TRUE;
       $resp['result'] = 'Projeto excluído com sucesso!';
 
-    } catch (ModelNotFoundException $e) {
-      $resp['success'] = FALSE;
-      $resp['result'] = 'Projeto não encontrado!';
     } catch (\Exception $ex) {
       $resp['success'] = FALSE;
       $resp['result'] = $ex->getMessage();
@@ -131,21 +165,182 @@ class ProjectController extends Controller {
     return response()->json($resp, 200, [], JSON_UNESCAPED_UNICODE);
   }
 
-  public function listMembers($id) {
+  /**
+   * @param int $id
+   * @param Request $request
+   * @return array
+   */
+  public function listMembers(int $id, Request $request) {
     try {
       $project = $this->repository->find($id);
       if ($project) {
-        $membersCollection = $project->getMembers();
-        foreach ($membersCollection as $member) {
-          $members[] = $member;
+        if ($this->checkProjectPermissions($project, $request->user())) {
+          return $project->getMembers()->toArray();
+        } else {
+          return [
+            'success' => FALSE,
+            'result' => 'Você não tem permissão para executar esta ação, você não é membro ou proprietário do projeto'
+          ];
         }
-      }
-      //$members = $this->repository->find($id)->members()->get();
-      if (count($members)) {
-        return $members;
       } else {
-        return [];
+        return [
+          'success' => FALSE,
+          'result' => 'Projeto não encontrado!'
+        ];
       }
+    } catch (\Exception $e) {
+      return [
+        'success' => FALSE,
+        'result' => $e->getMessage()
+      ];
+    }
+  }
+
+  /**
+   * @param int $id
+   * @param int $memberId
+   * @param Request $request
+   * @return array
+   */
+  public function addMember(Request $request) {
+    try {
+      $project = $this->repository->find($request['project_id']);
+      if ($project) {
+        if ($this->checkProjectOwner($project, $request->user())) {
+          return $this->service->addMember($project, $request['member_id']);
+        } else {
+          return [
+            'success' => FALSE,
+            'result' => 'Você não tem permissão para executar esta ação, requisite ao proprietário do projeto!'
+          ];
+        }
+      } else {
+        return [
+          'success' => FALSE,
+          'result' => 'Projeto não encontrado!'
+        ];
+      }
+    } catch (\Exception $e) {
+      return [
+        'success' => FALSE,
+        'result' => $e->getMessage()
+      ];
+    }
+  }
+
+  /**
+   * @param int $projectId
+   * @param int $memberId
+   * @param Request $request
+   * @return array
+   */
+  public function removeMember(Request $request) {
+    try {
+      $project = $this->repository->find($request['project_id']);
+      if ($project) {
+        if ($this->checkProjectOwner($project, $request->user())) {
+          return $this->service->removeMember($project, $request['member_id']);
+        } else {
+          return [
+            'success' => FALSE,
+            'result' => 'Você não tem permissão para executar esta ação, requisite ao proprietário do projeto'
+          ];
+        }
+      } else {
+        return [
+          'success' => FALSE,
+          'result' => 'Projeto não encontrado!'
+        ];
+      }
+    } catch (\Exception $e) {
+      return [
+        'success' => FALSE,
+        'result' => $e->getMessage()
+      ];
+    }
+  }
+
+  /**
+   * @param Request $request
+   * @return ProjectNote
+   */
+  public function addNote(Request $request) {
+    try {
+      $project = $this->repository->find($request['project_id']);
+      if ($project) {
+        if ($this->checkProjectPermissions($project, $request->user())) {
+          return $this->service->addNote($project, $request->all());
+        } else {
+          return [
+            'success' => FALSE,
+            'result' => 'Você não tem permissão para executar esta ação, pois você não é proprietário ou membro do projeto'
+          ];
+        }
+      } else {
+        return [
+          'success' => FALSE,
+          'result' => 'Projeto não encontrado!'
+        ];
+      }
+    } catch (\Exception $e) {
+      return [
+        'success' => FALSE,
+        'result' => $e->getMessage()
+      ];
+    }
+  }
+
+  /**
+   * @param int $projectId
+   * @param Request $request
+   * @return array
+   */
+  public function getNotes (int $projectId, Request $request) {
+    $project = $this->repository->find($projectId);
+    if ($project) {
+      if ($this->checkProjectPermissions($project, $request->user())) {
+        foreach ($project->getNotes() as $note) {
+          $notes[] = $note;
+        }
+        return $notes;
+      } else {
+        return [
+          'success' => FALSE,
+          'result' => 'Você não tem permissão para executar esta ação, requisite ao proprietário ou a um membro do projeto!'
+        ];
+      }
+    } else {
+      return [
+        'success' => FALSE,
+        'result' => 'Projeto não encontrado'
+      ];
+    }
+  }
+
+  public function showNote(int $projectId, int $noteId) {
+    try {
+      $DQL = <<<EOD
+            SELECT pn
+            FROM \CodeProject\Entities\Doctrine\Project p
+              INNER JOIN \CodeProject\Entities\Doctrine\ProjectNote pn
+            WHERE
+                  pn.project = p
+              AND pn.id = ?1
+              AND p.id = ?2
+EOD;
+      $projectNotes = $this->em->createQuery($DQL)->setParameter(1, $noteId)
+        ->setParameter(2, $projectId)
+        ->getResult();
+      if ($projectNotes) {
+        return $projectNotes;
+      } else {
+        return [
+          'success' => FALSE,
+          'result' => 'Nota não encontrada!'
+        ];
+      }
+
+      //return $this->repository->findWhere(['project_id' => $id, 'id' => $noteId]);
     } catch (ModelNotFoundException $e) {
       return [
         'success' => FALSE,
@@ -159,13 +354,101 @@ class ProjectController extends Controller {
     }
   }
 
-  public function addMember($id, $memberId) {
+  /**
+   * @param $projectId
+   * @param $noteId
+   * @param Request $request
+   * @return array
+   */
+  public function deleteNote(Request $request) {
     try {
-      return $this->service->addMember($id, $memberId);
+      $project = $this->repository->find($request['project_id']);
+      if ($project) {
+        if ($this->checkProjectPermissions($project, $request->user())) {
+          $note = $this->em->find(ProjectNote::class, $request['note_id']);
+          if ($project->getNotes()->contains($note)) {
+            return $this->service->deleteNote($note);
+          } else {
+            return [
+              'success' => FALSE,
+              'result' => 'Nota não encontrada!'
+            ];
+          }
+        } else {
+          return [
+            'success' => FALSE,
+            'result' => 'Você não tem permissão para executar esta ação, requisite ao proprietário ou a um membro do projeto!'
+          ];
+        }
+      } else {
+        return [
+          'success' => FALSE,
+          'result' => 'Projeto não econtrado!'
+        ];
+      }
+    } catch (\Exception $e) {
+      return [
+        'success' => FALSE,
+        'result' => $e->getMessage()
+      ];
+    }
+  }
+
+  public function updateNote(Request $request) {
+    $project = $this->repository->find($request['project_id']);
+    if ($project) {
+      if ($this->checkProjectPermissions($project, $request->user())) {
+        $note = $this->em->find(ProjectNote::class, $request['note_id']);
+        if ($project->getNotes()->contains($note)) {
+          return $this->service->updateNote($note, $request->all());
+        } else {
+          return [
+            'success' => FALSE,
+            'result' => 'Nota não encontrada!'
+          ];
+        }
+      } else {
+        return [
+          'success' => FALSE,
+          'result' => 'Você não tem permissão para executar esta ação, requisite ao proprietário ou a um membro do projeto!'
+        ];
+      }
+    } else {
+      return [
+        'success' => FALSE,
+        'result' => 'Projeto não encontrado!'
+      ];
+    }
+  }
+
+  public function showTask(int $projectId, int $noteId) {
+    try {
+      $DQL = <<<EOD
+            SELECT pt
+            FROM \CodeProject\Entities\Doctrine\Project p
+              INNER JOIN \CodeProject\Entities\Doctrine\ProjectTask pt
+            WHERE
+                  pt.project = p
+              AND pt.id = ?1
+              AND p.id = ?2
+EOD;
+      $projectNotes = $this->em->createQuery($DQL)->setParameter(1, $noteId)
+        ->setParameter(2, $projectId)
+        ->getResult();
+      if ($projectNotes) {
+        return $projectNotes;
+      } else {
+        return [
+          'success' => FALSE,
+          'result' => 'Tarefa não encontrada!'
+        ];
+      }
+
+      //return $this->repository->findWhere(['project_id' => $id, 'id' => $noteId]);
     } catch (ModelNotFoundException $e) {
       return [
         'success' => FALSE,
-        'result' => 'Projeto ou usuário não encontrado!'
+        'result' => 'Tarefa não encontrado!'
       ];
     } catch (\Exception $e) {
       return [
@@ -175,9 +458,51 @@ class ProjectController extends Controller {
     }
   }
 
-  public function removeMember($id, $memberId) {
+  /**
+   * @param int $projectId
+   * @param Request $request
+   * @return array
+   */
+  public function getTasks (int $projectId, Request $request) {
+    $project = $this->repository->find($projectId);
+    if ($project) {
+      if ($this->checkProjectPermissions($project, $request->user())) {
+        foreach ($project->getTasks() as $task) {
+          $tasks[] = $task;
+        }
+        return $tasks;
+      } else {
+        return [
+          'success' => FALSE,
+          'result' => 'Você não tem permissão para executar esta ação, requisite ao proprietário ou a um membro do projeto!'
+        ];
+      }
+    } else {
+      return [
+        'success' => FALSE,
+        'result' => 'Projeto não encontrado'
+      ];
+    }
+  }
+
+  public function addTask(Request $request) {
     try {
-      return $this->service->removeMember($id, $memberId);
+      $project = $this->repository->find($request['project_id']);
+      if ($project) {
+        if ($this->checkProjectPermissions($project, $request->user())) {
+          return $this->service->addTask($project, $request->all());
+        } else {
+          return [
+            'success' => FALSE,
+            'result' => 'Você não tem permissão para executar esta ação, pois você não é proprietário ou membro do projeto'
+          ];
+        }
+      } else {
+        return [
+          'success' => FALSE,
+          'result' => 'Projeto não encontrado!'
+        ];
+      }
     } catch (\Exception $e) {
       return [
         'success' => FALSE,
@@ -186,21 +511,103 @@ class ProjectController extends Controller {
     }
   }
 
-  private function checkProjectOwner ($projectId, User $user) {
-    if ($this->repository->isOwner($projectId, $user)) {
+  /**
+   * @param $projectId
+   * @param $taskId
+   * @param Request $request
+   * @return array
+   */
+  public function deleteTask(Request $request) {
+    try {
+      $project = $this->repository->find($request['project_id']);
+      if ($project) {
+        if ($this->checkProjectPermissions($project, $request->user())) {
+          $task = $this->em->find(ProjectTask::class, $request['task_id']);
+          if ($project->getTasks()->contains($task)) {
+            return $this->service->deleteTask($task);
+          } else {
+            return [
+              'success' => FALSE,
+              'result' => 'Tarefa não encontrada!'
+            ];
+          }
+        } else {
+          return [
+            'success' => FALSE,
+            'result' => 'Você não tem permissão para executar esta ação, requisite ao proprietário ou a um membro do projeto!'
+          ];
+        }
+      } else {
+        return [
+          'success' => FALSE,
+          'result' => 'Projeto não econtrado!'
+        ];
+      }
+    } catch (\Exception $e) {
+      return [
+        'success' => FALSE,
+        'result' => $e->getMessage()
+      ];
+    }
+  }
+
+  public function updateTask(Request $request) {
+    $project = $this->repository->find($request['project_id']);
+    if ($project) {
+      if ($this->checkProjectPermissions($project, $request->user())) {
+        $task = $this->em->find(ProjectTask::class, $request['task_id']);
+        if ($project->getTasks()->contains($task)) {
+          return $this->service->updateTask($task, $request->all());
+        } else {
+          return [
+            'success' => FALSE,
+            'result' => 'Tarefa não encontrada!'
+          ];
+        }
+      } else {
+        return [
+          'success' => FALSE,
+          'result' => 'Você não tem permissão para executar esta ação, requisite ao proprietário ou a um membro do projeto!'
+        ];
+      }
+    } else {
+      return [
+        'success' => FALSE,
+        'result' => 'Projeto não encontrado!'
+      ];
+    }
+  }
+
+  /**
+   * @param Project $project
+   * @param User $user
+   * @return bool
+   */
+  private function checkProjectOwner(Project $project, User $user) {
+    if ($this->repository->isOwner($project, $user)) {
       return TRUE;
     } else {
       return FALSE;
     }
   }
 
-  private function checkProjectMember ($projectId, User $user) {
-    return $this->repository->isMember($projectId, $user);
+  /**
+   * @param Project $project
+   * @param User $user
+   * @return bool
+   */
+  private function checkProjectMember(Project $project, User $user): bool {
+    return $this->repository->isMember($project, $user);
   }
 
-  private function checkProjectPermissions($projectId, User $user) {
-    if($this->checkProjectOwner($projectId, $user) ||
-       $this->checkProjectMember($projectId,$user)) {
+  /**
+   * @param Project $project
+   * @param User $user
+   * @return bool
+   */
+  private function checkProjectPermissions(Project $project, User $user): bool {
+    if ($this->checkProjectOwner($project, $user) ||
+      $this->checkProjectMember($project, $user)) {
       return TRUE;
     } else {
       return FALSE;

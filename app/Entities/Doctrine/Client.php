@@ -75,9 +75,7 @@ class Client implements \JsonSerializable {
             'email' => $this->email,
             'phone' => $this->phone,
             'address' => $this->address,
-            'obs' => $this->obs,
-            'created_at' => $this->created_at->format('Y-m-d H:i:s'),
-            'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
+            'obs' => $this->obs
         ]);
     }
 
@@ -89,9 +87,7 @@ class Client implements \JsonSerializable {
             'email' => $this->email,
             'phone' => $this->phone,
             'address' => $this->address,
-            'obs' => $this->obs,
-            'created_at' => $this->created_at->format('Y-m-d H:i:s'),
-            'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
+            'obs' => $this->obs
         ];
     }
 

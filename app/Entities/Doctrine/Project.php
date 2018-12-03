@@ -58,12 +58,12 @@ class Project implements \JsonSerializable {
   /**
    * @var PersistentCollection
    */
-  private $projectNotes;
+  private $notes;
 
   /**
    * @var PersistentCollection
    */
-  private $projectTasks;
+  private $tasks;
 
   /**
    * @var PersistentCollection
@@ -75,16 +75,17 @@ class Project implements \JsonSerializable {
    */
   private $owner;
 
-  public function __construct($name, $description, $progress, $status, DateTime $due_date, Client $client) {
+  public function __construct($name, $description, $progress, $status, DateTime $due_date, User $owner, Client $client) {
     $this->name = $name;
     $this->description = $description;
     $this->progress = $progress;
     $this->status = $status;
     $this->due_date = $due_date;
+    $this->owner = $owner;
     $this->client = $client;
     $this->due_date = $due_date;
-    $this->projectNotes = new ArrayCollection();
-    $this->projectTasks = new ArrayCollection();
+    $this->notes = new ArrayCollection();
+    $this->tasks = new ArrayCollection();
     $this->members = new ArrayCollection();
   }
 
@@ -96,9 +97,9 @@ class Project implements \JsonSerializable {
       'progress' => $this->progress,
       'status' => $this->status,
       'due_date' => $this->due_date->format('Y-m-d H:i:s'),
-      'created_at' => $this->created_at->format('Y-m-d H:i:s'),
-      'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
-      'client' => $this->client
+      'owner' => $this->owner,
+      'client' => $this->client,
+      'members' => $this->members->toArray()
     ]);
   }
 
@@ -110,9 +111,9 @@ class Project implements \JsonSerializable {
       'progress' => $this->progress,
       'status' => $this->status,
       'due_date' => $this->due_date->format('Y-m-d H:i:s'),
-      'created_at' => $this->created_at->format('Y-m-d H:i:s'),
-      'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
-      'client' => $this->client
+      'owner' => $this->owner,
+      'client' => $this->client,
+      'members' => $this->members->toArray(),
     ];
   }
 
@@ -218,29 +219,22 @@ class Project implements \JsonSerializable {
   /**
    * @return ArrayCollection
    */
-  public function getProjectNotes(): PersistentCollection {
-    return $this->projectNotes;
-  }
-
-  /**
-   * @param PersistentCollection $projectNotes
-   */
-  public function setProjectNotes(PersistentCollection $projectNotes): void {
-    $this->projectNotes = $projectNotes;
+  public function getNotes(): PersistentCollection {
+    return $this->notes;
   }
 
   /**
    * @return PersistentCollection
    */
   public function getTasks(): PersistentCollection {
-    return $this->projectTasks;
+    return $this->tasks;
   }
 
   /**
-   * @param PersistentCollection $projectTasks
+   * @param PersistentCollection $tasks
    */
-  public function setTasks(PersistentCollection $projectTasks): void {
-    $this->projectTasks = $projectTasks;
+  public function setTasks(PersistentCollection $tasks): void {
+    $this->tasks = $tasks;
   }
 
   /**
@@ -274,9 +268,30 @@ class Project implements \JsonSerializable {
     }
   }
 
+  /**
+   * @param User $member
+   */
   public function removeMember(User $member): void {
     if ($this->members->contains($member)) {
       $this->members->removeElement($member);
+    }
+  }
+
+  /**
+   * @param ProjectNote $note
+   */
+  public function addNote(ProjectNote $note): void {
+    if(!$this->notes->contains($note)) {
+      $this->notes[] = $note;
+    }
+  }
+
+  /**
+   * @param ProjectNote $note
+   */
+  public function removeNote(ProjectNote $note): void {
+    if($this->notes->contains($note)) {
+      $this->notes->removeElement($note);
     }
   }
 }

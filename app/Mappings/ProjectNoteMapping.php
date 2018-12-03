@@ -2,10 +2,8 @@
 
 namespace CodeProject\Mappings;
 
-use CodeProject\Entities\Doctrine\Client;
 use CodeProject\Entities\Doctrine\Project;
 use CodeProject\Entities\Doctrine\ProjectNote;
-use CodeProject\Entities\Doctrine\User;
 use LaravelDoctrine\Fluent\EntityMapping;
 use LaravelDoctrine\Fluent\Fluent;
 
