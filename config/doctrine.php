@@ -34,7 +34,8 @@ return [
         CodeProject\Mappings\OauthAuthCodeMapping::class,
         CodeProject\Mappings\OauthClientMapping::class,
         CodeProject\Mappings\OauthRefreshTokenMapping::class,
-        CodeProject\Mappings\PersonalAccessClientMapping::class
+        CodeProject\Mappings\PersonalAccessClientMapping::class,
+        CodeProject\Mappings\ProjectFileMapping::class
       ],
       'connection' => env('DB_CONNECTION', 'mysql'),
       'namespaces' => [],

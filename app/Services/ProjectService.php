@@ -6,14 +6,13 @@ namespace CodeProject\Services;
 use Carbon\Carbon;
 use CodeProject\Entities\Doctrine\Client;
 use CodeProject\Entities\Doctrine\Project;
-use CodeProject\Entities\Doctrine\ProjectNote;
-use CodeProject\Entities\Doctrine\ProjectTask;
+use CodeProject\Entities\Doctrine\ProjectFile;
 use CodeProject\Entities\Doctrine\User;
 use CodeProject\Repositories\ProjectRepository;
-use CodeProject\Validators\ProjectNoteValidator;
-use CodeProject\Validators\ProjectTaskValidator;
 use CodeProject\Validators\ProjectValidator;
 use Doctrine\ORM\EntityManagerInterface;
+use Illuminate\Filesystem\Filesystem;
+use Illuminate\Contracts\Filesystem\Factory as Storage;
 use Prettus\Validator\Exceptions\ValidatorException;
 use DateTime;
 
@@ -32,30 +31,31 @@ class ProjectService {
    * @var EntityManagerInterface
    */
   protected $em;
+
   /**
-   * @var ProjectNoteValidator
+   * @var Filesystem
    */
-  private $noteValidator;
+  private $filesystem;
   /**
-   * @var ProjectTaskValidator
+   * @var Storage
    */
-  private $taskValidator;
+  private $storage;
 
   /**
    * ProjectService constructor.
    * @param EntityManagerInterface $em
    * @param ProjectRepository $repository
    * @param ProjectValidator $validator
-   * @param ProjectNoteValidator $noteValidator
-   * @param ProjectTaskValidator $taskValidator
+   * @param Filesystem $filesystem
+   * @param Storage $storage
    */
   public function __construct(EntityManagerInterface $em, ProjectRepository $repository, ProjectValidator $validator,
-                              ProjectNoteValidator $noteValidator, ProjectTaskValidator $taskValidator) {
+                              Filesystem $filesystem, Storage $storage) {
     $this->repository = $repository;
     $this->validator = $validator;
     $this->em = $em;
-    $this->noteValidator = $noteValidator;
-    $this->taskValidator = $taskValidator;
+    $this->filesystem = $filesystem;
+    $this->storage = $storage;
   }
 
   /**
@@ -195,61 +195,20 @@ class ProjectService {
 
   /**
    * @param Project $project
-   * @param array $data
-   * @return array|ProjectNote
-   */
-  public function addNote(Project $project, array $data) {
-    try {
-      $this->noteValidator->with($data)->passesOrFail();
-      $note = new ProjectNote($data['title'], $data['note'], $project);
-      $this->em->persist($note);
-      $this->em->flush();
-      return $note;
-    } catch (ValidatorException $e) {
-      return [
-        'success' => FALSE,
-        'result' => $e->getMessageBag()
-      ];
-    }
-  }
-
-  /**
-   * @param ProjectNote $note
+   * @param $file
+   * @param $name
    * @return array
    */
-  public function deleteNote(ProjectNote $note) {
+  public function addFile(Project $project, $file, $name) {
     try {
-      $this->em->remove($note);
+      $extension = $file->getClientOriginalExtension();
+      $this->storage->put($name . "." . $extension, $this->filesystem->get($file));
+      $fileObj = new ProjectFile($name, $extension, '', $project);
+      $this->em->persist($fileObj);
       $this->em->flush();
       return [
         'success' => TRUE,
-        'result' => 'Nota excluída com sucesso'
-      ];
-    } catch (\Exception $e) {
-      return [
-        'success' => FALSE,
-        'result' => "Não foi possível remover a nota: {$e->getMessage()}"
-      ];
-    }
-  }
-
-  /**
-   * @param ProjectNote $note
-   * @param array $data
-   * @return array|ProjectNote
-   */
-  public function updateNote(ProjectNote $note, array $data) {
-    try {
-      $this->noteValidator->with($data)->passesOrFail();
-      $note->setTitle($data['title']);
-      $note->setNote($data['note']);
-      $this->em->persist($note);
-      $this->em->flush();
-      return $note;
-    } catch (ValidatorException $e) {
-      return [
-        'success' => FALSE,
-        'result' => $e->getMessageBag()
+        'result' => 'Arquivo enviado com sucesso!'
       ];
     } catch (\Exception $e) {
       return [
@@ -257,81 +216,5 @@ class ProjectService {
         'result' => $e->getMessage()
       ];
     }
-
-  }
-
-  /**
-   * @param Project $project
-   * @param array $data
-   * @return array|ProjectTask
-   */
-  public function addTask(Project $project, array $data) {
-    try {
-      $this->taskValidator->with($data)->passesOrFail();
-      $task = new ProjectTask(
-        $data['name'],
-        new DateTime($data['start_date']),
-        new DateTime($data['due_date']),
-        $data['status'],
-        $project
-      );
-      $this->em->persist($task);
-      $this->em->flush();
-      return $task;
-    } catch (ValidatorException $e) {
-      return [
-        'success' => FALSE,
-        'result' => $e->getMessageBag()
-      ];
-    }
-  }
-
-  /**
-   * @param ProjectTask $task
-   * @return array
-   */
-  public function deleteTask(ProjectTask $task) {
-    try {
-      $this->em->remove($task);
-      $this->em->flush();
-      return [
-        'success' => TRUE,
-        'result' => 'Tarefa excluída com sucesso'
-      ];
-    } catch (\Exception $e) {
-      return [
-        'success' => FALSE,
-        'result' => "Não foi possível remover a tarefa: {$e->getMessage()}"
-      ];
-    }
-  }
-
-  /**
-   * @param ProjectTask $task
-   * @param array $data
-   * @return array|ProjectTask
-   */
-  public function updateTask(ProjectTask $task, array $data) {
-    try {
-      $this->taskValidator->with($data)->passesOrFail();
-      $task->setName($data['name']);
-      $task->setStartDate(new DateTime($data['start_date']));
-      $task->setDueDate(new DateTime($data['due_date']));
-      $task->setStatus($data['status']);
-      $this->em->persist($task);
-      $this->em->flush();
-      return $task;
-    } catch (ValidatorException $e) {
-      return [
-        'success' => FALSE,
-        'result' => $e->getMessageBag()
-      ];
-    } catch (\Exception $e) {
-      return [
-        'success' => FALSE,
-        'result' => $e->getMessage()
-      ];
-    }
-
   }
 }
