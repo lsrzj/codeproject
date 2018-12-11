@@ -6,9 +6,11 @@ namespace CodeProject\Services;
 use CodeProject\Entities\Doctrine\Project;
 use CodeProject\Entities\Doctrine\ProjectService;
 use CodeProject\Entities\Doctrine\ProjectTask;
+use CodeProject\Repositories\ProjectTaskRepository;
 use CodeProject\Validators\ProjectTaskValidator;
 use Doctrine\ORM\EntityManagerInterface;
 use DateTime;
+use Doctrine\ORM\NoResultException;
 
 class ProjectTaskService {
 
@@ -22,9 +24,22 @@ class ProjectTaskService {
    */
   private $validator;
 
-  public function __construct(EntityManagerInterface $em, ProjectTaskValidator $validator) {
+  /**
+   * @var ProjectTaskRepository
+   */
+  private $repository;
+
+
+  /**
+   * ProjectTaskService constructor.
+   * @param EntityManagerInterface $em
+   * @param ProjectTaskRepository $repository
+   * @param ProjectTaskValidator $validator
+   */
+  public function __construct(EntityManagerInterface $em, ProjectTaskRepository $repository, ProjectTaskValidator $validator) {
     $this->em = $em;
     $this->validator = $validator;
+    $this->repository = $repository;
   }
 
   /**
@@ -54,33 +69,40 @@ class ProjectTaskService {
     }
   }
 
-  /**
-   * @param ProjectTask $task
-   * @return array
-   */
-  public function deleteTask(ProjectTask $task) {
+  public function getTask(int $projectId, int $taskId) {
     try {
-      $this->em->remove($task);
-      $this->em->flush();
-      return [
-        'success' => TRUE,
-        'result' => 'Tarefa excluída com sucesso'
-      ];
-    } catch (\Exception $e) {
-      return [
-        'success' => FALSE,
-        'result' => "Não foi possível remover a tarefa: {$e->getMessage()}"
-      ];
+      return $this->repository->getTaskFromProject($projectId, $taskId);
+    } catch (NoResultException $e) {
+      return FALSE;
     }
   }
 
   /**
-   * @param ProjectTask $task
-   * @param array $data
-   * @return array|ProjectTask
+   * @param int $projectId
+   * @param int $taskId
+   * @return bool
+   * @throws \Exception
    */
-  public function updateTask(ProjectTask $task, array $data) {
+  public function deleteTask(int $projectId, int $taskId) {
+      try {
+        $task = $this->repository->getTaskFromProject($projectId, $taskId);
+        $this->em->remove($task);
+        $this->em->flush();
+        return TRUE;
+      } catch (NoResultException $e) {
+        return FALSE;
+      }
+    }
+
+  /**
+   * @param int $projectId
+   * @param int $taskId
+   * @param array $data
+   * @return array
+   */
+  public function updateTask(int $projectId, int $taskId, array $data) {
     try {
+      $task = $this->repository->getTaskFromProject($projectId, $taskId);
       $this->validator->with($data)->passesOrFail();
       $task->setName($data['name']);
       $task->setStartDate(new DateTime($data['start_date']));

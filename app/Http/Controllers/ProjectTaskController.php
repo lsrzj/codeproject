@@ -6,7 +6,6 @@ use CodeProject\Entities\Doctrine\ProjectTask;
 use CodeProject\Repositories\ProjectRepository;
 use CodeProject\Services\ProjectTaskService;
 use Doctrine\ORM\EntityManagerInterface;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
 class ProjectTaskController extends Controller {
@@ -44,7 +43,7 @@ class ProjectTaskController extends Controller {
    * @param Request $request
    * @return array
    */
-  public function getTasks (int $projectId, Request $request) {
+  public function getTasks(int $projectId, Request $request) {
     $project = $this->repository->find($projectId);
     if ($project) {
       if ($this->repository->checkProjectPermissions($project, $request->user())) {
@@ -72,38 +71,20 @@ class ProjectTaskController extends Controller {
 
   /**
    * @param int $projectId
-   * @param int $noteId
-   * @return array|mixed
+   * @param int $taskId
+   * @return array
    */
-  public function showTask(int $projectId, int $noteId) {
+  public function showTask(int $projectId, int $taskId) {
     try {
-      $DQL = <<<EOD
-            SELECT pt
-            FROM \CodeProject\Entities\Doctrine\Project p
-              INNER JOIN \CodeProject\Entities\Doctrine\ProjectTask pt
-            WHERE
-                  pt.project = p
-              AND pt.id = ?1
-              AND p.id = ?2
-EOD;
-      $projectNotes = $this->em->createQuery($DQL)->setParameter(1, $noteId)
-        ->setParameter(2, $projectId)
-        ->getResult();
-      if ($projectNotes) {
-        return $projectNotes;
+      $projectTask = $this->service->getTask($projectId, $taskId);
+      if ($projectTask) {
+        return $projectTask;
       } else {
         return [
           'success' => FALSE,
           'result' => 'Tarefa não encontrada!'
         ];
       }
-
-      //return $this->repository->findWhere(['project_id' => $id, 'id' => $noteId]);
-    } catch (ModelNotFoundException $e) {
-      return [
-        'success' => FALSE,
-        'result' => 'Tarefa não encontrado!'
-      ];
     } catch (\Exception $e) {
       return [
         'success' => FALSE,
@@ -121,13 +102,15 @@ EOD;
       $project = $this->repository->find($request['project_id']);
       if ($project) {
         if ($this->repository->checkProjectPermissions($project, $request->user())) {
-          $task = $this->em->find(ProjectTask::class, $request['task_id']);
-          if ($project->getTasks()->contains($task)) {
-            return $this->service->deleteTask($task);
+          if ($this->service->deleteTask($project->getId(), $request['task_id'])) {
+            return [
+              'success' => TRUE,
+              'result' => 'Tarefa excluída com sucesso'
+            ];
           } else {
             return [
               'success' => FALSE,
-              'result' => 'Tarefa não encontrada!'
+              'result' => 'Não foi possível excluir a tarefa'
             ];
           }
         } else {
@@ -158,15 +141,7 @@ EOD;
     $project = $this->repository->find($request['project_id']);
     if ($project) {
       if ($this->repository->checkProjectPermissions($project, $request->user())) {
-        $task = $this->em->find(ProjectTask::class, $request['task_id']);
-        if ($project->getTasks()->contains($task)) {
-          return $this->service->updateTask($task, $request->all());
-        } else {
-          return [
-            'success' => FALSE,
-            'result' => 'Tarefa não encontrada!'
-          ];
-        }
+         $this->service->updateTask($project->getId(), $request['task_id'], $request->all());
       } else {
         return [
           'success' => FALSE,

@@ -4,6 +4,7 @@ namespace CodeProject\Mappings;
 
 use CodeProject\Entities\Doctrine\Client;
 use CodeProject\Entities\Doctrine\Project;
+use CodeProject\Entities\Doctrine\ProjectFile;
 use CodeProject\Entities\Doctrine\ProjectNote;
 use CodeProject\Entities\Doctrine\ProjectTask;
 use CodeProject\Entities\Doctrine\User;
@@ -49,5 +50,6 @@ class ProjectMapping extends EntityMapping
         $builder->belongsToMany(User::class, 'members')->inversedBy('memberProjects')->joinTable('project_members');
         $builder->hasMany(ProjectNote::class, 'notes')->mappedBy('project');
         $builder->hasMany(ProjectTask::class, 'tasks')->mappedBy('project');
+        $builder->hasMany(ProjectFile::class, 'files')->mappedBy('project');
     }
 }

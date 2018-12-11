@@ -38,6 +38,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('add/member', 'ProjectController@addMember');
     Route::delete('remove/member', 'ProjectController@removeMember');
     //FILES
-    Route::post('add/file', 'ProjectController@addFile');
+    Route::post('add/file', 'ProjectFileController@addFile');
+    Route::delete('delete/file', 'ProjectFileController@deleteFile');
   });
 });

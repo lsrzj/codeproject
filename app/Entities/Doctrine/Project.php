@@ -75,6 +75,11 @@ class Project implements \JsonSerializable {
    */
   private $owner;
 
+  /**
+   * @var ArrayCollection
+   */
+  private $files;
+
   public function __construct($name, $description, $progress, $status, DateTime $due_date, User $owner, Client $client) {
     $this->name = $name;
     $this->description = $description;
@@ -87,11 +92,12 @@ class Project implements \JsonSerializable {
     $this->notes = new ArrayCollection();
     $this->tasks = new ArrayCollection();
     $this->members = new ArrayCollection();
+    $this->files = new ArrayCollection();
   }
 
   public function __toString() {
     return json_encode([
-      'id' =>$this->id,
+      'id' => $this->id,
       'name' => $this->name,
       'description' => $this->description,
       'progress' => $this->progress,
@@ -230,12 +236,6 @@ class Project implements \JsonSerializable {
     return $this->tasks;
   }
 
-  /**
-   * @param PersistentCollection $tasks
-   */
-  public function setTasks(PersistentCollection $tasks): void {
-    $this->tasks = $tasks;
-  }
 
   /**
    * @return PersistentCollection
@@ -263,35 +263,48 @@ class Project implements \JsonSerializable {
    * @param PersistentCollection $members
    */
   public function addMember(User $member): void {
-    if (!$this->members->contains($member)) {
-      $this->members[] = $member;
-    }
+    $this->members[] = $member;
   }
 
   /**
    * @param User $member
    */
   public function removeMember(User $member): void {
-    if ($this->members->contains($member)) {
-      $this->members->removeElement($member);
-    }
+    $this->members->removeElement($member);
   }
 
   /**
    * @param ProjectNote $note
    */
   public function addNote(ProjectNote $note): void {
-    if(!$this->notes->contains($note)) {
-      $this->notes[] = $note;
-    }
+    $this->notes[] = $note;
   }
 
   /**
    * @param ProjectNote $note
    */
   public function removeNote(ProjectNote $note): void {
-    if($this->notes->contains($note)) {
-      $this->notes->removeElement($note);
-    }
+    $this->notes->removeElement($note);
+  }
+
+  /**
+   * @return PersistentCollection
+   */
+  public function getFiles(): PersistentCollection {
+    return $this->files;
+  }
+
+  /**
+   * @param ProjectFile $file
+   */
+  public function addFile(ProjectFile $file): void {
+    $this->files[] = $file;
+  }
+
+  /**
+   * @param ProjectFile $file
+   */
+  public function removeFile(ProjectFile $file): void {
+    $this->files->removeElement($file);
   }
 }

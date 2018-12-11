@@ -2,7 +2,6 @@
 
 namespace CodeProject\Http\Controllers;
 
-use CodeProject\Entities\Doctrine\ProjectNote;
 use CodeProject\Repositories\ProjectRepository;
 use CodeProject\Services\ProjectService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -249,29 +248,4 @@ class ProjectController extends Controller {
       ];
     }
   }
-
-
-  /**
-   * @param Request $request
-   * @return array
-   */
-  public function addFile(Request $request) {
-    $project = $this->repository->find($request['project_id']);
-    if ($project) {
-      if($this->repository->checkProjectPermissions($project, $request->user())) {
-        return $this->service->addFile($project, $request->file('file'), $request['name']);
-      } else {
-        return [
-          'success' => FALSE,
-          'result' => 'Você não tem permissão para executar esta ação, requisite ao proprietário ou a um membro do projeto!'
-        ];
-      }
-    } else {
-      return [
-        'success' => FALSE,
-        'result' => 'Projeto não encontrado!'
-      ];
-    }
-  }
-
 }

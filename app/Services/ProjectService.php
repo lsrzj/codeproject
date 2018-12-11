@@ -13,6 +13,7 @@ use CodeProject\Validators\ProjectValidator;
 use Doctrine\ORM\EntityManagerInterface;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Contracts\Filesystem\Factory as Storage;
+use Illuminate\Http\UploadedFile;
 use Prettus\Validator\Exceptions\ValidatorException;
 use DateTime;
 
@@ -49,13 +50,10 @@ class ProjectService {
    * @param Filesystem $filesystem
    * @param Storage $storage
    */
-  public function __construct(EntityManagerInterface $em, ProjectRepository $repository, ProjectValidator $validator,
-                              Filesystem $filesystem, Storage $storage) {
+  public function __construct(EntityManagerInterface $em, ProjectRepository $repository, ProjectValidator $validator) {
     $this->repository = $repository;
     $this->validator = $validator;
     $this->em = $em;
-    $this->filesystem = $filesystem;
-    $this->storage = $storage;
   }
 
   /**
@@ -199,22 +197,54 @@ class ProjectService {
    * @param $name
    * @return array
    */
-  public function addFile(Project $project, $file, $name) {
+  public function addFile(Project $project, UploadedFile $file, $name) {
     try {
       $extension = $file->getClientOriginalExtension();
-      $this->storage->put($name . "." . $extension, $this->filesystem->get($file));
+      $success = $this->storage->put($name . "." . $extension, $this->filesystem->get($file));
       $fileObj = new ProjectFile($name, $extension, '', $project);
       $this->em->persist($fileObj);
       $this->em->flush();
-      return [
-        'success' => TRUE,
-        'result' => 'Arquivo enviado com sucesso!'
-      ];
+      if ($success) {
+        return [
+          'success' => TRUE,
+          'result' => 'Arquivo enviado com sucesso!'
+        ];
+      }
     } catch (\Exception $e) {
       return [
         'success' => FALSE,
         'result' => $e->getMessage()
       ];
+    }
+  }
+
+  /**
+   * @param int $projectId
+   * @param int $fileId
+   * @return mixed
+   * @throws \Exception
+   */
+  public function deleteFile(int $projectId, int $fileId) {
+    $DQL = <<<EOD
+      SELECT pf
+      FROM \CodeProject\Entities\Doctrine\ProjectFile pf
+        INNER JOIN \CodeProject\Entities\Doctrine\Project p
+          WITH pf.project = p
+      WHERE
+            p.id = :projectId
+        AND pf.id = :fileId 
+EOD;
+    $file = $this->em->createQuery($DQL)
+      ->setParameter(':projectId', $projectId)
+      ->setParameter(':fileId', $fileId)
+      ->getSingleResult();
+    if ($file) {
+      $fileDb = $this->em->find(ProjectFile::class, $fileId);
+      $this->em->remove($fileDb);
+      $this->em->flush();
+      return $this->storage->delete($file->getName() . "." . $file->getExtension());
+    } else {
+      throw new \Exception('Não foi possível encontrar o arquivo');
     }
   }
 }
